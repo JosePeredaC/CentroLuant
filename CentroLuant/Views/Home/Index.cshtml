@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Página Principal";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bienvenido al Sistema de Gestión</h1>
+    <h2 class="display-6">Centro Odontológico Luant</h2>
+    <p class="lead mt-3">Seleccione la sección a la que desea acceder.</p>
+</div>
+
+<hr class="my-4" />
+
+<div class="row justify-content-center">
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <h5 class="card-title">Gestión Clínica</h5>
+                <p class="card-text">Consultar historiales médicos y registrar nuevos tratamientos (Especialistas).</p>
+
+                <a asp-controller="Clinico" asp-action="Historial" class="btn btn-primary mt-auto">Ir a Historiales</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <h5 class="card-title">Gestión de Pacientes</h5>
+                <p class="card-text">Registrar nuevos pacientes y consultar datos existentes (Recepción).</p>
+
+                <a href="#" class="btn btn-secondary mt-auto disabled">Próximamente</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <h5 class="card-title">Gestión de Citas</h5>
+                <p class="card-text">Agendar, modificar y consultar citas programadas (Recepción).</p>
+
+                <a href="#" class="btn btn-secondary mt-auto disabled">Próximamente</a>
+            </div>
+        </div>
+    </div>
+
+</div>

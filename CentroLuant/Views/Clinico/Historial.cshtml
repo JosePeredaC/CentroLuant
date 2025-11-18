@@ -1,0 +1,112 @@
+﻿@* PASO 1: Definir el Modelo
+  Le decimos a la vista que el objeto que recibirá del controlador
+  (o que podría recibir) es de tipo 'HistorialMedico'.
+*@
+@model CentroLuant.Models.HistorialMedico
+
+@{
+    ViewData["Title"] = "Gestión de Historial Clínico";
+}
+
+<h2>Gestión de Historial Clínico</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Historial" method="get">
+            <div class="input-group">
+                <input type="text" name="dni" class="form-control" placeholder="Buscar por DNI del Paciente..." />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (Model != null)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <h4>Datos del Historial</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>DNI Paciente:</strong> @Model.DNI_Paciente</p>
+            <p><strong>Fecha Creación Historial:</strong> @Model.FechaCreacion.ToShortDateString()</p>
+            <p><strong>Observaciones Iniciales:</strong> @Model.ObservacionesIniciales</p>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Agregar Nuevo Tratamiento (CUS 07)</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="AgregarTratamiento" method="post">
+                <input type="hidden" name="ID_Historial" value="@Model.ID_Historial" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Diagnóstico</label>
+                        <input type="text" name="Diagnostico" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Tratamiento</label>
+                        <input type="text" name="TipoTratamiento" class="form-control" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Fecha del Tratamiento</label>
+                        <input type="date" name="FechaTratamiento" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Costo (S/.)</label>
+                        <input type="number" step="0.01" name="Costo" class="form-control" required />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label>Observaciones (Tratamiento)</label>
+                    <textarea name="Observaciones" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Guardar Tratamiento</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Tratamientos Realizados</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Diagnóstico</th>
+                        <th>Tratamiento</th>
+                        <th>Observaciones</th>
+                        <th>Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tratamiento in Model.Tratamientos)
+                    {
+                        <tr>
+                            <td>@tratamiento.FechaTratamiento.ToShortDateString()</td>
+                            <td>@tratamiento.Diagnostico</td>
+                            <td>@tratamiento.TipoTratamiento</td>
+                            <td>@tratamiento.Observaciones</td>
+                            <td>S/. @tratamiento.Costo.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
