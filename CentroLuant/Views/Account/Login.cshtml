@@ -1,5 +1,4 @@
-﻿@model CentroLuant.Models.LoginViewModel
-@{
+﻿@{
     ViewData["Title"] = "Iniciar sesión";
     Layout = "_AuthLayout"; // Si quieres una página sin menú, luego te muestro cómo.
 }
@@ -145,22 +144,19 @@
 
             <form asp-action="Login" method="post" autocomplete="off">
                 <div class="mb-3">
-                    <label asp-for="Usuario" class="form-label">Usuario</label>
-                    <input asp-for="Usuario" class="form-control" placeholder="Nombre de Usuario" />
-                    <span asp-validation-for="Usuario" class="text-danger small"></span>
+                    <label class="form-label">Usuario</label>
+                    <input name="usuario" class="form-control" placeholder="Nombre de Usuario" />
                 </div>
 
                 <div class="mb-2">
-                    <label asp-for="Contrasena" class="form-label">Contraseña</label>
-                    <input asp-for="Contrasena" type="password" class="form-control" placeholder="••••••••" />
-                    <span asp-validation-for="Contrasena" class="text-danger small"></span>
+                    <label class="form-label">Contraseña</label>
+                    <input name="contrasena" type="password" class="form-control" placeholder="••••••••" />
                 </div>
 
-                @* MENSAJE DE ERROR GENERAL *@
-                @if (!string.IsNullOrEmpty(Model?.MensajeError))
+                @if (ViewBag.Error != null)
                 {
                     <div class="alert alert-danger py-2 px-3 mt-3 mb-1 small">
-                        @Model.MensajeError
+                        @ViewBag.Error
                     </div>
                 }
 

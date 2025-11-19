@@ -1,0 +1,186 @@
+﻿@model CentroLuant.Models.Paciente
+
+@{
+    ViewData["Title"] = "Registrar paciente";
+}
+
+<style>
+    .panel-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 20px 40px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px 26px 28px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 8px 26px rgba(15,23,42,0.08);
+    }
+
+    .form-header {
+        margin-bottom: 18px;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 4px;
+    }
+
+    .form-subtitle {
+        color: #64748B;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .form-section-title {
+        font-size: .9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #94A3B8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        font-size: .9rem;
+        color: #0F172A;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        border-color: #E2E8F0;
+        font-size: .9rem;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 .15rem rgba(59,130,246,.25);
+        }
+
+    .btn-primary-strong {
+        border-radius: 999px;
+        padding: 9px 20px;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        font-size: .8rem;
+    }
+
+    .btn-secondary-soft {
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 500;
+        font-size: .8rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #EF4444;
+        font-weight: 700;
+    }
+
+    .text-required-hint {
+        font-size: .8rem;
+        color: #94A3B8;
+    }
+</style>
+
+<div class="panel-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h2 class="form-title">Registrar nuevo paciente</h2>
+            <p class="form-subtitle">
+                Ingrese los datos personales del paciente.
+                Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+            </p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger py-2 px-3 mb-3">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-action="Crear" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-section-title">Datos de identificación</div>
+
+            <div class="row g-3 mb-2">
+                <div class="col-md-4">
+                    <label asp-for="DNI" class="form-label required">DNI</label>
+                    <input asp-for="DNI" class="form-control" maxlength="8" />
+                    <span asp-validation-for="DNI" class="text-danger small"></span>
+                </div>
+                <div class="col-md-8 text-end d-flex align-items-end justify-content-end">
+                    <span class="text-required-hint">
+                        Verifique que el DNI no tenga errores antes de guardar.
+                    </span>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Nombres" class="form-label required">Nombres</label>
+                    <input asp-for="Nombres" class="form-control" />
+                    <span asp-validation-for="Nombres" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellidos" class="form-label required">Apellidos</label>
+                    <input asp-for="Apellidos" class="form-control" />
+                    <span asp-validation-for="Apellidos" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="form-section-title">Datos de contacto</div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="FechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                    <input asp-for="FechaNacimiento" type="date" class="form-control" />
+                    <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Telefono" class="form-label">Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CorreoElectronico" class="form-label">Correo electrónico</label>
+                    <input asp-for="CorreoElectronico" type="email" class="form-control" />
+                    <span asp-validation-for="CorreoElectronico" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Direccion" class="form-label">Dirección</label>
+                <textarea asp-for="Direccion" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Direccion" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-secondary-soft">
+                    Volver al listado
+                </a>
+                <button type="submit" class="btn btn-primary btn-primary-strong">
+                    Guardar paciente
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

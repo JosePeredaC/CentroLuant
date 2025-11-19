@@ -1,0 +1,185 @@
+﻿@model IEnumerable<CentroLuant.Models.Cita>
+
+@{
+    ViewData["Title"] = "Citas";
+    var fechaFiltro = ViewBag.FechaFiltro as string;
+}
+
+<style>
+    .panel-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 20px 40px;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .panel-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0;
+    }
+
+    .panel-subtitle {
+        margin: 4px 0 0;
+        color: #64748B;
+        font-size: .9rem;
+    }
+
+    .panel-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 6px 22px rgba(15,23,42,0.06);
+    }
+
+    .btn-primary-soft {
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 600;
+        border: none;
+        background: #3B82F6;
+        color: #ffffff;
+        white-space: nowrap;
+    }
+
+    .table thead th {
+        background: #F8FAFC;
+        color: #475569;
+        font-weight: 600;
+        border-bottom: 1px solid #E2E8F0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .table tbody td {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        vertical-align: middle !important;
+    }
+
+    .cita-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-end;
+    }
+
+    .badge-estado {
+        font-size: .75rem;
+    }
+</style>
+
+<div class="panel-wrapper">
+    <div class="panel-header">
+        <div>
+            <h2 class="panel-title">Citas</h2>
+            <p class="panel-subtitle">
+                Agenda y control de citas por fecha, paciente y especialista.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <form asp-action="Index" method="get" class="d-flex gap-1">
+                <input type="date"
+                       name="fecha"
+                       value="@fechaFiltro"
+                       class="form-control form-control-sm" />
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    Filtrar
+                </button>
+            </form>
+
+            <a asp-action="Crear" class="btn-primary-soft">
+                + Registrar cita
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-info py-2 px-3 mb-3">
+            @TempData["msg"]
+        </div>
+    }
+
+    <div class="panel-card">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-muted">
+                No hay citas registradas para los criterios seleccionados.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Paciente</th>
+                            <th>Especialista</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model)
+                        {
+                            <tr>
+                                <td>@c.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>@c.Hora.ToString(@"hh\:mm")</td>
+                                <td>@c.PacienteNombreCompleto (@c.DNI_Paciente)</td>
+                                <td>@c.EspecialistaNombre</td>
+                                <td>
+                                    @switch (c.Estado)
+                                    {
+                                        case "Programada":
+                                            @:<span class="badge bg-primary badge-estado">Programada</span>
+                                            break;
+                                        case "Cancelada":
+                                            @:<span class="badge bg-secondary badge-estado">Cancelada</span>
+                                            break;
+                                        case "Atendida":
+                                            @:<span class="badge bg-success badge-estado">Atendida</span>
+                                            break;
+                                        default:
+                                            @:<span class="badge bg-light text-dark badge-estado">@c.Estado</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="cita-actions">
+                                        @* Aquí podrías poner Detalle/Editar más adelante *@
+
+                                        @if (c.Estado == "Programada")
+                                        {
+                                            <form asp-action="Cancelar"
+                                                  asp-route-id="@c.ID_Cita"
+                                                  method="post"
+                                                  onsubmit="return confirm('¿Cancelar esta cita?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger">
+                                                    Cancelar
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

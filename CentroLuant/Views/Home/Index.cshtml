@@ -1,14 +1,14 @@
-﻿@{ ViewData["Title"] = "Inicio"; }
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
 
 <style>
-    /* CONTENEDOR GENERAL DEL DASHBOARD */
     .home-wrapper {
-        max-width: 1120px;           /* Evita que se estire a todo el ancho */
+        max-width: 1120px;
         margin: 0 auto;
         padding: 24px 0 40px;
     }
 
-    /* ENCABEZADO */
     .home-header-title {
         font-size: 1.6rem;
         font-weight: 700;
@@ -28,7 +28,6 @@
         margin-bottom: 0;
     }
 
-    /* TARJETAS DE MÓDULO */
     .module-grid {
         margin-top: 24px;
     }
@@ -44,45 +43,36 @@
         align-items: flex-start;
         gap: 14px;
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-        transition: border-color .15s ease, box-shadow .15s ease,
-                    transform .15s ease, background-color .15s ease;
+        transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease, background-color .15s ease;
     }
 
-    .module-card:hover {
-        border-color: #3B82F6;
-        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.10);
-        transform: translateY(-2px);
-        background-color: #F9FAFB;
-        cursor: pointer;
-    }
-
-    .module-card.disabled {
-        opacity: 0.65;
-        cursor: default;
-        pointer-events: none;
-        border-style: dashed;
-        box-shadow: none;
-        background-color: #FFFFFF;
-    }
+        .module-card:hover {
+            border-color: #3B82F6;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.10);
+            transform: translateY(-2px);
+            background-color: #F9FAFB;
+            cursor: pointer;
+        }
 
     .module-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
+        width: 52px;
+        height: 52px;
+        border-radius: 999px; /* círculo */
+        overflow: hidden; /* recorta lo que sobresalga */
         background: #E0F2FE;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        font-size: 1.25rem;
-        color: #0F172A;
     }
 
-    .module-main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
+        /* si usas imágenes dentro */
+        .module-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* recorta sin deformar */
+            display: block;
+        }
 
     .module-title {
         font-size: 1rem;
@@ -95,7 +85,7 @@
         font-size: 0.88rem;
         color: #64748B;
         margin-bottom: 8px;
-        line-height: 1.3rem;
+        line-height: 1.35rem;
     }
 
     .module-meta {
@@ -111,59 +101,61 @@
         <h1 class="home-header-title">Panel principal</h1>
         <p class="home-header-subtitle">Centro Odontológico Luant</p>
         <p class="home-header-helper">
-            Desde aquí puede acceder a los módulos principales del sistema.  
-            Seleccione la opción que corresponda a la tarea que va a realizar.
+            Desde aquí puede acceder a los módulos principales del sistema.
+            Seleccione la opción correspondiente a la tarea que desea realizar.
         </p>
     </div>
 
     <!-- TARJETAS DE MÓDULO -->
     <div class="row module-grid g-3">
+
         <!-- Gestión clínica -->
         <div class="col-lg-4 col-md-6">
-            <div class="module-card" onclick="location.href='@Url.Action("Historial","Clinico")'">
+            <div class="module-card" onclick="location.href='@Url.Action("Historial", "Clinico")'">
                 <div class="module-icon">
-                    <i class="bi bi-journal-medical"></i>
+                    <i class="bi bi-journal-medical"><img src="~/img/gestion-clinica.jpg" class="module-icon"></i>
                 </div>
-                <div class="module-main">
+                <div>
                     <div class="module-title">Gestión clínica</div>
                     <div class="module-text">
                         Consulta historiales médicos y registra diagnósticos y tratamientos realizados.
                     </div>
-                    <div class="module-meta">Rol recomendado: Especialista</div>
+                    <div class="module-meta">Rol: Especialista / Administrador</div>
                 </div>
             </div>
         </div>
 
         <!-- Gestión de pacientes -->
         <div class="col-lg-4 col-md-6">
-            <div class="module-card disabled">
+            <div class="module-card" onclick="location.href='@Url.Action("Index", "Paciente")'">
                 <div class="module-icon">
-                    <i class="bi bi-people"></i>
+                    <i class="bi bi-people"><img src="~/img/gestion-paciente.jpg" class="module-icon"></i>
                 </div>
-                <div class="module-main">
+                <div>
                     <div class="module-title">Gestión de pacientes</div>
                     <div class="module-text">
-                        Registro y actualización de datos personales y contacto de los pacientes.
+                        Registro, actualización y consulta de datos personales y clínicos del paciente.
                     </div>
-                    <div class="module-meta">Próximamente · Rol: Recepción</div>
+                    <div class="module-meta">Rol: Recepción / Administrador</div>
                 </div>
             </div>
         </div>
 
         <!-- Gestión de citas -->
         <div class="col-lg-4 col-md-6">
-            <div class="module-card disabled">
+            <div class="module-card" onclick="location.href='@Url.Action("Index", "Cita")'">
                 <div class="module-icon">
-                    <i class="bi bi-calendar2-check"></i>
+                    <i class="bi bi-calendar2-check"><img src="~/img/gestion-citas.jpg" class="module-icon"></i>
                 </div>
-                <div class="module-main">
+                <div>
                     <div class="module-title">Gestión de citas</div>
                     <div class="module-text">
-                        Agenda y control de citas por día, especialista y paciente.
+                        Agenda clínica: programación, control y seguimiento de citas por paciente y especialista.
                     </div>
-                    <div class="module-meta">Próximamente · Rol: Recepción</div>
+                    <div class="module-meta">Rol: Recepción / Administrador</div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>

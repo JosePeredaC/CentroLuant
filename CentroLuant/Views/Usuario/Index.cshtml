@@ -1,0 +1,240 @@
+﻿@model IEnumerable<CentroLuant.Models.Usuario>
+<div class="panel-wrapper">
+
+@*
+    Vista de gestión de usuarios
+*@
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+    <style>
+        /* CONTENEDOR CENTRAL */
+        .panel-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 20px 40px;
+        }
+
+        .usuarios-header {
+            margin-bottom: 20px;
+        }
+
+        .user-table-card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 6px 22px rgba(15,23,42,0.06);
+        }
+
+        /* TABLA MÁS ELEGANTE */
+        .table thead th {
+            background: #F8FAFC;
+            color: #475569;
+            font-weight: 600;
+            border-bottom: 1px solid #E2E8F0;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+
+        .table tbody td {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            vertical-align: middle !important;
+        }
+
+        /* CONTENEDOR FLEXIBLE PARA BOTONES */
+        .usuarios-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+        }
+
+            .usuarios-actions .btn {
+                width: 120px; /* BOTONES CON ANCHO CONSTANTE */
+                text-align: center;
+                white-space: nowrap;
+            }
+    </style>
+
+
+    <div class="usuarios-header">
+        <div class="usuarios-header-text">
+            <h2 class="usuarios-title">Gestión de usuarios</h2>
+            <p class="usuarios-subtitle">
+                Administre las cuentas de acceso al sistema (roles, estado y acceso).
+            </p>
+        </div>
+
+        <a asp-action="Crear" class="btn-create">
+            + Crear usuario
+        </a>
+    </div>
+
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-info py-2 px-3 mb-3">
+            @TempData["msg"]
+        </div>
+    }
+
+    <div class="user-table-card table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>@u.NombreCompleto</td>
+                        <td>@u.UsuarioLogin</td>
+                        <td>
+                            @switch (u.Rol)
+                            {
+                                case "Administrador":
+                                    @:<span class=" badge-rol badge-rol-admin">Administrador</span>
+                                    break;
+                                case "Especialista":
+                                    @:<span class="badge-rol badge-rol-esp">Especialista</span>
+                                    break;
+                                case "Recepcionista":
+                                    @:<span class="badge-rol badge-rol-rec">Recepcionista</span>
+                                    break;
+                                default:
+                                    @:<span class="bg-secondary">@u.Rol</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @if (u.Activo)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactivo</span>
+                            }
+                        </td>
+                        <td class="text-end usuarios-actions">
+                            <a asp-action="Editar" asp-route-id="@u.ID_Usuario"
+                               class="btn btn-sm btn-outline-primary">
+                                Editar
+                            </a>
+
+                            <a asp-action="ResetPassword" asp-route-id="@u.ID_Usuario"
+                               class="btn btn-sm btn-outline-secondary"
+                               data-confirm="true"
+                               data-url="@Url.Action("ResetPassword", "Usuario", new { id = u.ID_Usuario })"
+                               data-title="Restablecer contraseña"
+                               data-message="Se establecerá una contraseña temporal para el usuario '@u.UsuarioLogin'. ¿Desea continuar?">
+                                Reset Pass
+                            </a>
+
+                            @if (u.Activo)
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        data-confirm="true"
+                                        data-url="@Url.Action("Desactivar", "Usuario", new { id = u.ID_Usuario })"
+                                        data-title="Desactivar usuario"
+                                        data-message="El usuario '@u.UsuarioLogin' no podrá acceder al sistema mientras esté inactivo. ¿Desea desactivarlo?">
+                                    Desactivar
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-success"
+                                        data-confirm="true"
+                                        data-url="@Url.Action("Activar", "Usuario", new { id = u.ID_Usuario })"
+                                        data-title="Activar usuario"
+                                        data-message="El usuario '@u.UsuarioLogin' recuperará acceso al sistema. ¿Desea activarlo?">
+                                    Activar
+                                </button>
+                            }
+
+                            @if (u.Rol != "Administrador")
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-dark"
+                                        data-confirm="true"
+                                        data-url="@Url.Action("Eliminar", "Usuario", new { id = u.ID_Usuario })"
+                                        data-title="Eliminar usuario"
+                                        data-message="Esta acción eliminará permanentemente al usuario '@u.UsuarioLogin'. ¿Está seguro de continuar?">
+                                    Eliminar
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN GENÉRICO -->
+    <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title modal-confirm-title" id="confirmActionLabel">Confirmar acción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-confirm-text" id="confirmActionMessage">
+                        ¿Desea realizar esta acción?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="#" class="btn btn-danger btn-sm" id="confirmActionBtn">Sí, continuar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        (function () {
+            const modalElement = document.getElementById('confirmActionModal');
+            if (!modalElement) return;
+
+            const messageElement = document.getElementById('confirmActionMessage');
+            const confirmButton = document.getElementById('confirmActionBtn');
+
+            const bsModal = new bootstrap.Modal(modalElement);
+
+            document.querySelectorAll('[data-confirm="true"]').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const url = this.getAttribute('data-url');
+                    const title = this.getAttribute('data-title');
+                    const message = this.getAttribute('data-message');
+
+                    if (title) {
+                        document.getElementById('confirmActionLabel').textContent = title;
+                    }
+
+                    if (message) {
+                        messageElement.textContent = message;
+                    }
+
+                    confirmButton.setAttribute('href', url);
+
+                    bsModal.show();
+                });
+            });
+        })();
+    </script>
+}

@@ -1,4 +1,6 @@
+using CentroLuant.DataAccess;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +12,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/Login";      
         options.AccessDeniedPath = "/Account/Denied";
     });
-builder.Services.AddTransient<CentroLuant.DataAccess.PacienteRepository>();
-builder.Services.AddTransient<CentroLuant.DataAccess.HistorialRepository>();
-
+builder.Services.AddTransient<PacienteRepository>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    return new PacienteRepository(config.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddTransient<HistorialRepository>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    return new HistorialRepository(config.GetConnectionString("DefaultConnection"));
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

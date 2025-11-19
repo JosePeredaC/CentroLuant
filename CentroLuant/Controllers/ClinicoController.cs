@@ -1,87 +1,81 @@
-﻿using CentroLuant.DataAccess;
-using CentroLuant.DataAccess; // Para usar tus Repositorios
-using CentroLuant.Models;
-using CentroLuant.Models; // Para usar tus Modelos
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using CentroLuant.DataAccess;
+using CentroLuant.Models;
 
 namespace CentroLuant.Controllers
 {
-    [Authorize(Roles = "Especialista")]
-
+    [Authorize(Roles = "Administrador,Especialista")]
     public class ClinicoController : Controller
     {
-        // Variables para guardar los repositorios
-        private readonly PacienteRepository _pacienteRepo;
-        private readonly HistorialRepository _historialRepo;
+        private readonly PacienteRepository _pacRepo;
+        private readonly HistorialRepository _histRepo;
 
-        // --- CONSTRUCTOR ---
-        // El sistema "inyecta" automáticamente los repositorios que registramos en Program.cs
-        public ClinicoController(PacienteRepository pacienteRepo, HistorialRepository historialRepo)
+        public ClinicoController(IConfiguration config)
         {
-            _pacienteRepo = pacienteRepo;
-            _historialRepo = historialRepo;
+            var conn = config.GetConnectionString("DefaultConnection")
+                       ?? throw new Exception("Cadena de conexión no configurada.");
+
+            _pacRepo = new PacienteRepository(conn);
+            _histRepo = new HistorialRepository(conn);
         }
 
-        // --- TAREA 1: Consultar Historial (CUS 06) ---
-        // Este método se llamará cuando el Especialista busque un historial
-        // GET: /Clinico/Historial
-        public IActionResult Historial(string dni)
+        // Búsqueda y visualización del historial
+        [HttpGet]
+        public IActionResult Historial(string? dni)
         {
-            if (string.IsNullOrEmpty(dni))
+            var vm = new HistorialViewModel();
+
+            if (!string.IsNullOrWhiteSpace(dni))
             {
-                // Si no se provee DNI, solo muestra la vista de búsqueda
-                return View();
-            }
-
-            // 1. Usa el Repositorio para buscar el historial
-            HistorialMedico historial = _historialRepo.ConsultarHistorialCompleto(dni);
-
-            if (historial == null)
-            {
-                // Paciente no encontrado o no tiene historial
-                ViewBag.Error = "No se encontró el historial para el DNI proporcionado.";
-                return View();
-            }
-
-            // 2. Envía el modelo 'historial' (con sus tratamientos) a la Vista
-            return View(historial);
-        }
-
-        // --- TAREA 2: Agregar Tratamiento (CUS 07) ---
-        // Este método se llamará cuando el Especialista guarde un nuevo tratamiento
-        // POST: /Clinico/AgregarTratamiento
-        [HttpPost]
-        public IActionResult AgregarTratamiento(Tratamiento nuevoTratamiento)
-        {
-            // Validamos que los datos del formulario sean correctos
-            if (ModelState.IsValid)
+                var paciente = _pacRepo.ConsultarPacientePorDNI(dni);
+                if (paciente == null)
                 {
-                // 1. Usa el Repositorio para insertar el tratamiento
-                bool exito = _historialRepo.InsertarNuevoTratamiento(nuevoTratamiento);
-
-                if (exito)
-                {
-                    // Si fue exitoso, redirige de vuelta al historial del paciente
-                    // Necesitamos el DNI del paciente, que está en el Historial
-                    var historial = _historialRepo.ConsultarHistorialCompleto(
-                        _pacienteRepo.ConsultarPacientePorHistorial(nuevoTratamiento.ID_Historial).DNI
-                    );
-                    return RedirectToAction("Historial", new { dni = historial.DNI_Paciente });
+                    ViewBag.Error = "No existe un paciente registrado con ese DNI.";
+                    return View(vm);
                 }
+
+                var historial = _histRepo.ObtenerPorDni(dni)
+                                ?? _histRepo.CrearHistorial(dni);
+
+                var tratamientos = _histRepo.ObtenerTratamientos(historial.ID_Historial);
+
+                vm.Paciente = paciente;
+                vm.Historial = historial;
+                vm.Tratamientos = tratamientos;
+                vm.NuevoTratamiento = new Tratamiento
+                {
+                    ID_Historial = historial.ID_Historial,
+                    FechaTratamiento = DateTime.Today,
+                    Costo = 0,
+                    DNI_Paciente = dni
+                };
             }
 
-            // Si hay un error, volvemos a mostrar la vista con los datos
-            ViewBag.Error = "Error al guardar el tratamiento.";
-            // (Necesitaríamos recargar el historial completo aquí)
-            return View("Historial", nuevoTratamiento.ID_Historial);
+            if (TempData["msg"] != null)
+                ViewBag.Msg = TempData["msg"];
+
+            if (TempData["msgError"] != null)
+                ViewBag.MsgError = TempData["msgError"];
+
+            return View(vm);
         }
 
-        // (Método de ejemplo para que el Especialista vea los pacientes)
-        public IActionResult Index()
+        // Registrar tratamiento
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RegistrarTratamiento(Tratamiento t)
         {
-            var listaPacientes = _pacienteRepo.ConsultarTodosLosPacientes();
-            return View(listaPacientes);
+            if (!ModelState.IsValid)
+            {
+                TempData["msgError"] = "Complete los datos requeridos del tratamiento.";
+                return RedirectToAction("Historial", new { dni = t.DNI_Paciente });
+            }
+
+            _histRepo.AgregarTratamiento(t);
+            TempData["msg"] = "Tratamiento registrado en el historial.";
+
+            return RedirectToAction("Historial", new { dni = t.DNI_Paciente });
         }
     }
 }

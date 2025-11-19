@@ -134,7 +134,14 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-
+                                @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link app-link styles-nav" asp-controller="Usuario" asp-action="Index">
+                                            <i class="bi bi-person-badge"></i> Usuarios
+                                        </a>
+                                    </li>
+                                }
                                 <li class="nav-item">
                                     <a class="nav-link app-link styles-nav" asp-controller="Home" asp-action="Index">
                                         <i class="bi bi-speedometer2"></i> Dashboard
@@ -148,7 +155,7 @@
                                 </li>
 
                                 <li class="nav-item">
-                                    <a class="nav-link app-link styles-nav" asp-controller="Citas" asp-action="Index">
+                                    <a class="nav-link app-link styles-nav" asp-controller="Cita" asp-action="Index">
                                         <i class="bi bi-calendar-check"></i> Citas
                                     </a>
                                 </li>

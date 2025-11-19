@@ -1,0 +1,190 @@
+﻿@model CentroLuant.Models.Paciente
+
+@{
+    ViewData["Title"] = "Editar paciente";
+}
+
+<style>
+    .panel-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 20px 40px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px 26px 28px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 8px 26px rgba(15,23,42,0.08);
+    }
+
+    .form-header {
+        margin-bottom: 18px;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 4px;
+    }
+
+    .form-subtitle {
+        color: #64748B;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .form-section-title {
+        font-size: .9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #94A3B8;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        font-size: .9rem;
+        color: #0F172A;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        border-color: #E2E8F0;
+        font-size: .9rem;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 .15rem rgba(59,130,246,.25);
+        }
+
+    .btn-primary-strong {
+        border-radius: 999px;
+        padding: 9px 20px;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        font-size: .8rem;
+    }
+
+    .btn-secondary-soft {
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 500;
+        font-size: .8rem;
+    }
+
+    .readonly-pill {
+        background: #EFF6FF;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: .8rem;
+        color: #1D4ED8;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+</style>
+
+<div class="panel-wrapper">
+    <div class="form-card">
+        <div class="form-header">
+            <h2 class="form-title">Editar datos del paciente</h2>
+            <p class="form-subtitle">
+                Actualice únicamente la información que ha cambiado.
+                El identificador (DNI) se muestra solo para referencia.
+            </p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger py-2 px-3 mb-3">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-action="Editar" method="post">
+            @Html.AntiForgeryToken()
+
+            @* DNI solo lectura *@
+            <div class="form-section-title">Identificación</div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">DNI</label>
+                    <div class="readonly-pill">
+                        <span>@Model.DNI</span>
+                    </div>
+                    <input type="hidden" asp-for="DNI" />
+                </div>
+                <div class="col-md-8 d-flex align-items-end justify-content-end">
+                    <span class="text-muted" style="font-size:.8rem;">
+                        Para corregir un DNI erróneo, elimine el paciente y vuelva a registrarlo.
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-section-title">Datos personales</div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Nombres" class="form-label">Nombres</label>
+                    <input asp-for="Nombres" class="form-control" />
+                    <span asp-validation-for="Nombres" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellidos" class="form-label">Apellidos</label>
+                    <input asp-for="Apellidos" class="form-control" />
+                    <span asp-validation-for="Apellidos" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="form-section-title">Datos de contacto</div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="FechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                    <input asp-for="FechaNacimiento" type="date" class="form-control" />
+                    <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Telefono" class="form-label">Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CorreoElectronico" class="form-label">Correo electrónico</label>
+                    <input asp-for="CorreoElectronico" type="email" class="form-control" />
+                    <span asp-validation-for="CorreoElectronico" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Direccion" class="form-label">Dirección</label>
+                <textarea asp-for="Direccion" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Direccion" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-secondary-soft">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary btn-primary-strong">
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

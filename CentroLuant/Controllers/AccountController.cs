@@ -1,70 +1,100 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+
+using CentroLuant.DataAccess;
 using CentroLuant.Models;
 
 namespace CentroLuant.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly Dictionary<string, (string Password, string Rol)> _usuarios =
-            new()
-            {
-                { "recepcion", ("1234", "Recepcionista") },
-                { "doctor", ("1234", "Especialista") }
-            };
+        private readonly UsuarioRepository _repo;
 
+        public AccountController(IConfiguration config)
+        {
+            var conn = config.GetConnectionString("DefaultConnection")
+           ?? throw new Exception("La cadena de conexión 'DefaultConnection' no está configurada.");
+
+            _repo = new UsuarioRepository(conn);
+        }
+
+        // HASH seguro
+        private string Hash(string input)
+        {
+            using var sha = SHA256.Create();
+            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            // Formato correcto: Base64 (coincide con tu base de datos)
+            return Convert.ToBase64String(bytes);
+        }
+
+        // ======================
+        // LOGIN GET
+        // ======================
         [HttpGet]
         public IActionResult Login()
         {
-            return View(new LoginViewModel());
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home");
+
+            return View();
         }
 
+        // ======================
+        // LOGIN POST
+        // ======================
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(string usuario, string contrasena)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            if (!_usuarios.ContainsKey(model.Usuario) ||
-                _usuarios[model.Usuario].Password != model.Contrasena)
+            if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(contrasena))
             {
-                model.MensajeError = "Usuario o contraseña incorrectos.";
-                return View(model);
+                ViewBag.Error = "Complete todos los campos.";
+                return View();
             }
 
-            var rol = _usuarios[model.Usuario].Rol;
+            var user = _repo.Login(usuario, Hash(contrasena));
 
+            if (user == null)
+            {
+                ViewBag.Error = "Usuario o contraseña incorrectos.";
+                return View();
+            }
+
+            // Crear Claims
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, model.Usuario),
-                new Claim(ClaimTypes.Role, rol)
+                new Claim(ClaimTypes.Name, user.UsuarioLogin),
+                new Claim(ClaimTypes.Role, user.Rol),
+                new Claim("NombreCompleto", user.NombreCompleto)
             };
 
             var identity = new ClaimsIdentity(
                 claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
 
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
+                principal
+            );
 
             return RedirectToAction("Index", "Home");
         }
 
+        // ======================
+        // LOGOUT
+        // ======================
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account");
-        }
-
-        public IActionResult Denied()
-        {
-            return Content("Acceso denegado.");
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Login");
         }
     }
 }

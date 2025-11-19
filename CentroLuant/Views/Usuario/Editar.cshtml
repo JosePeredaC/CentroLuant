@@ -1,0 +1,143 @@
+﻿@model CentroLuant.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar usuario";
+    var esUsuarioActual = User?.Identity?.Name == Model.UsuarioLogin;
+}
+
+<style>
+    .panel-wrapper {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 20px 20px 40px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        padding: 24px 24px 20px;
+        border-radius: 16px;
+        box-shadow: 0 6px 24px rgba(15,23,42,0.08);
+        border: 1px solid #E2E8F0;
+    }
+
+    .form-header {
+        margin-bottom: 16px;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0;
+    }
+
+    .form-subtitle {
+        margin: 4px 0 0;
+        font-size: 0.9rem;
+        color: #64748B;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #0F172A;
+        font-size: 0.9rem;
+    }
+
+    .form-text-hint {
+        font-size: 0.8rem;
+        color: #94A3B8;
+    }
+
+    .btn-save {
+        border-radius: 10px;
+        padding: 9px 16px;
+        font-weight: 600;
+        background: #3B82F6;
+        color: #ffffff;
+        border: none;
+    }
+
+    .btn-cancel {
+        border-radius: 10px;
+        padding: 9px 16px;
+        font-weight: 500;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="panel-wrapper">
+
+    <div class="form-card">
+        <div class="form-header">
+            <h2 class="form-title">Editar usuario</h2>
+            <p class="form-subtitle">
+                Modifique los datos de acceso y rol del usuario
+                <strong>@Model.UsuarioLogin</strong>.
+                @if (esUsuarioActual)
+                {
+                    <span class="form-text-hint d-block">
+                        Estás editando tu propia cuenta.
+                    </span>
+                }
+            </p>
+        </div>
+
+        <form method="post">
+            <input type="hidden" asp-for="ID_Usuario" />
+
+            <div class="mb-3">
+                <label asp-for="NombreCompleto" class="form-label">Nombre completo</label>
+                <input class="form-control" asp-for="NombreCompleto" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="UsuarioLogin" class="form-label">Usuario</label>
+                <input class="form-control" asp-for="UsuarioLogin" />
+                <div class="form-text-hint">
+                    Nombre de usuario que se utilizará para iniciar sesión.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Rol" class="form-label">Rol</label>
+                <select class="form-select" asp-for="Rol">
+                    <option>Administrador</option>
+                    <option>Recepcionista</option>
+                    <option>Especialista</option>
+                </select>
+                <div class="form-text-hint">
+                    Define el nivel de acceso dentro del sistema.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label d-block mb-1">Estado</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" asp-for="Activo" type="checkbox" />
+                    <label class="form-check-label" for="Activo">
+                        @((Model.Activo ? "Cuenta activa" : "Cuenta inactiva"))
+                    </label>
+                </div>
+                <div class="form-text-hint">
+                    Los usuarios inactivos no podrán iniciar sesión en el sistema.
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-cancel">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn-save">
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
