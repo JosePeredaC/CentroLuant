@@ -1,11 +1,14 @@
 ﻿using CentroLuant.DataAccess;
-using CentroLuant.Models;
-using Microsoft.AspNetCore.Mvc;
 using CentroLuant.DataAccess; // Para usar tus Repositorios
+using CentroLuant.Models;
 using CentroLuant.Models; // Para usar tus Modelos
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CentroLuant.Controllers
 {
+    [Authorize(Roles = "Especialista")]
+
     public class ClinicoController : Controller
     {
         // Variables para guardar los repositorios

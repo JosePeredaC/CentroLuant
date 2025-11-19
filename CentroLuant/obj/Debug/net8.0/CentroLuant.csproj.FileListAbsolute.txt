@@ -39,3 +39,4 @@ C:\Users\USER\source\repos\CentroLuant\CentroLuant\obj\Debug\net8.0\refint\Centr
 C:\Users\USER\source\repos\CentroLuant\CentroLuant\obj\Debug\net8.0\CentroLuant.pdb
 C:\Users\USER\source\repos\CentroLuant\CentroLuant\obj\Debug\net8.0\CentroLuant.genruntimeconfig.cache
 C:\Users\USER\source\repos\CentroLuant\CentroLuant\obj\Debug\net8.0\ref\CentroLuant.dll
+C:\Users\USER\source\repos\CentroLuant\CentroLuant\obj\Debug\net8.0\CentroLuant.sourcelink.json

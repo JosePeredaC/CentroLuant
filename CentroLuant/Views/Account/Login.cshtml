@@ -1,0 +1,196 @@
+﻿@model CentroLuant.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar sesión";
+    Layout = "_AuthLayout"; // Si quieres una página sin menú, luego te muestro cómo.
+}
+
+<style>
+    /* ====== ESTILOS DEL LOGIN (PUEDES CAMBIAR COLORES Y TIPOGRAFÍA AQUÍ) ====== */
+
+    .auth-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+        background-image: url('/img/fondo-login.jpg');
+        background-size: cover;
+        background-position: center;
+
+        /* EFECTO OSCURECIDO + BLUR */
+        position: relative;
+        overflow: hidden;
+        /* Cambia los colores del degradado ↑ */
+    }
+    .auth-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    /* Blur + capa translúcida blanca (muy suave) */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    background: rgba(255, 255, 255, 0.10); 
+    /* Si quieres más claridad sube el 0.45 */
+    }
+
+    .auth-card {
+        position: relative; /* Para estar encima del blur */
+    }
+    .auth-card {
+        background-color: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+        overflow: hidden;
+        max-width: 920px;
+        width: 100%;
+    }
+
+    .auth-left {
+        background: radial-gradient(circle at top left, rgba(13,110,253,0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(102,16,242,0.15), transparent 50%);
+        padding: 40px 38px;
+    }
+
+    .auth-logo {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: .03em;
+    }
+
+    .auth-tagline {
+        font-size: .95rem;
+        opacity: .8;
+    }
+
+    .auth-highlight {
+        font-size: 2.1rem;
+        font-weight: 700;
+        margin-top: 22px;
+    }
+
+    .auth-right {
+        padding: 40px 38px;
+        background-color: #f8fafc;
+    }
+
+    .form-label {
+        font-weight: 500;
+        font-size: .9rem;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 12px;
+        border-color: #e2e8f0;
+    }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 .15rem rgba(13,110,253,.25);
+            border-color: #0d6efd;
+        }
+
+    .btn-login {
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 600;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+    }
+
+    .small-link {
+        font-size: .83rem;
+    }
+
+    @@media (max-width: 768px) {
+        .auth-left
+
+    {
+        display: none; /* En móvil solo vemos el formulario */
+    }
+
+    .auth-right {
+        padding: 32px 24px;
+    }
+
+    }
+</style>
+
+<div class="auth-page">
+    <div class="auth-card row g-0">
+        <!-- LADO IZQUIERDO (branding / texto bonito) -->
+        <div class="auth-left col-md-6 d-flex flex-column justify-content-between">
+            <div>
+                <!-- LOGO / NOMBRE DE LA CLÍNICA -->
+                <div class="auth-logo mb-2">
+                    <!-- Aquí puedes poner una imagen si tienes logo -->
+                    <!-- <img src="~/images/logo.png" alt="Logo" style="height:32px;" /> -->
+                    Centro Odontológico Luant
+                </div>
+            </div>
+            <div>
+                <img src="~/img/logo.png" alt="Logo"style="position:relative;height:300px;right:35px" />
+            </div>
+            <div class="text-muted small mt-4">
+                © @DateTime.Now.Year Centro Odontológico Luant · Intranet
+            </div>
+        </div>
+
+        <!-- LADO DERECHO (FORMULARIO DE LOGIN) -->
+        <div class="auth-right col-md-6">
+            <h4 class="mb-3 fw-semibold">Iniciar sesión</h4>
+            <p class="text-muted mb-4">
+                Usa tus credenciales corporativas para continuar.
+            </p>
+
+            <form asp-action="Login" method="post" autocomplete="off">
+                <div class="mb-3">
+                    <label asp-for="Usuario" class="form-label">Usuario</label>
+                    <input asp-for="Usuario" class="form-control" placeholder="Nombre de Usuario" />
+                    <span asp-validation-for="Usuario" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-2">
+                    <label asp-for="Contrasena" class="form-label">Contraseña</label>
+                    <input asp-for="Contrasena" type="password" class="form-control" placeholder="••••••••" />
+                    <span asp-validation-for="Contrasena" class="text-danger small"></span>
+                </div>
+
+                @* MENSAJE DE ERROR GENERAL *@
+                @if (!string.IsNullOrEmpty(Model?.MensajeError))
+                {
+                    <div class="alert alert-danger py-2 px-3 mt-3 mb-1 small">
+                        @Model.MensajeError
+                    </div>
+                }
+
+                <div class="d-flex align-items-center justify-content-between mt-3 mb-4">
+                    <div class="form-check small">
+                        <input class="form-check-input" type="checkbox" id="recordarme">
+                        <label class="form-check-label" for="recordarme">
+                            Recordarme en este equipo
+                        </label>
+                    </div>
+
+                    <a href="#" class="small-link text-decoration-none">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-login">
+                    Entrar al sistema
+                </button>
+            </form>
+
+            <div class="mt-4 small text-muted">
+                ¿Problemas para iniciar sesión? Contacta al administrador del sistema.
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

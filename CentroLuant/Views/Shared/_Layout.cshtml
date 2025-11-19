@@ -1,39 +1,267 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CentroLuant</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Tus estilos -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CentroLuant.styles.css" asp-append-version="true" />
+
+    <style>
+        /* ====== ESTILO GENERAL APP ====== */
+        body {
+            background: #0f172a;
+            background: radial-gradient(
+                circle at top left,
+                rgba(180, 239, 255, 0.55) 0%,
+                rgba(225, 243, 255, 0.35) 40%,
+                rgba(240, 248, 255, 0.20) 100%
+            );
+            color: #0F172A;
+
+        }
+
+        .app-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-main {
+            flex: 1;
+        }
+
+        /* ====== NAVBAR ====== */
+        .styles-nav{
+            color: #0F172A;
+        }
+        .app-navbar {
+            background: linear-gradient(
+                135deg,
+                rgba(220, 245, 255, 0.55) 0%,
+                rgba(235, 250, 255, 0.40) 40%,
+                rgba(255, 255, 255, 0.20) 100%
+            );
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        }
+        .icono-logo{
+            width:50px;
+            height: auto;
+        }
+        .app-brand {
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+        }
+
+        .app-brand-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: auto;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            margin-right: 8px;
+            background: linear-gradient(135deg, #FFFFFF, #F7F7F7, #ECECEC);
+            color: #0b1120;
+            font-weight: 800;
+        }
+
+        .nav-link.app-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: .85;
+        }
+
+            .nav-link.app-link i {
+                font-size: 1rem;
+                margin-right: 6px;
+            }
+
+        /* ====== CONTENIDO ====== */
+        .app-content-wrapper {
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .app-card {
+            background: rgba(15, 23, 42, 0.92);
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.65);
+        }
+
+        /* ====== FOOTER ====== */
+        .app-footer {
+            border-top: 1px solid rgba(148, 163, 184, 0.25);
+            background: radial-gradient(
+                circle at top left,
+                rgba(180, 239, 255, 0.55) 0%,
+                rgba(225, 243, 255, 0.35) 40%,
+                rgba(240, 248, 255, 0.20) 100%
+            );
+            color: #0F172A;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CentroLuant</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    
+    <div class="app-shell">
+        <!-- NAVBAR SUPERIOR -->
+        <header>
+            <nav class="navbar navbar-expand-lg app-navbar">
+                <div class="container-fluid px-3 px-md-4">
+                    <a class="navbar-brand  styles-nav d-flex align-items-center app-brand" asp-controller="Home" asp-action="Index">
+                        <img src="~/img/icono-logo.png" class="icono-logo app-brand-badge">
+                        Centro Odontológico Luant
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+                        <!-- Menú principal -->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+
+                                <li class="nav-item">
+                                    <a class="nav-link app-link styles-nav" asp-controller="Home" asp-action="Index">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link app-link styles-nav" asp-controller="Paciente" asp-action="Index">
+                                        <i class="bi bi-people"></i> Pacientes
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link app-link styles-nav" asp-controller="Citas" asp-action="Index">
+                                        <i class="bi bi-calendar-check"></i> Citas
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link app-link styles-nav" asp-controller="Clinico" asp-action="Historial">
+                                        <i class="bi bi-journal-medical"></i> Historial clínico
+                                    </a>
+                                </li>
+
+                            </ul>
+                        }
+                        else
+                        {
+                            <!-- Menú vacío cuando no hay sesión (opcional) -->
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                                <li class="nav-item">
+                                    <span class="nav-link text-muted" style="opacity: .6;">Inicie sesión para ver el menú</span>
+                                </li>
+                            </ul>
+                        }
+                            <!-- Lado derecho: usuario -->
+                        <ul class="navbar-nav mb-2 mb-lg-0">
+
+                            <li class="nav-item dropdown">
+
+                                <a class="nav-link dropdown-toggle app-link d-flex align-items-center"
+                                   href="#" id="userDropdown"
+                                   role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+
+                                    <!-- Avatar redondo (inicial o icono genérico) -->
+                                    <span class="rounded-circle bg-light text-dark d-inline-flex align-items-center justify-content-center me-2"
+                                          style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                        @{
+                                            if (User.Identity.IsAuthenticated)
+                                            {
+                                                var firstLetter = User.Identity.Name?.Substring(0, 1)?.ToUpper();
+                                                @firstLetter
+                                            }
+                                            else
+                                            {
+                                                @:"?"
+                                            }
+                                        }
+                                    </span>
+
+                                    <!-- Texto del usuario -->
+                                    <span class="d-none d-sm-inline">
+                                        @(
+                                            User.Identity.IsAuthenticated
+                                            ? User.Identity.Name
+                                            : "Sin sesión iniciada"
+                                        )
+                                    </span>
+                                </a>
+
+                                <!-- Dropdown -->
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <li>
+                                            <h6 class="dropdown-header">Sesión activa</h6>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Home" asp-action="Privacy">Privacidad</a>
+                                        </li>
+
+                                        <li><hr class="dropdown-divider" /></li>
+
+                                        <li>
+                                            <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                                    Cerrar sesión
+                                                </button>
+                                            </form>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <span class="dropdown-item text-muted small">No hay ninguna sesión iniciada</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+
+
+                    </div>
                 </div>
+            </nav>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="app-main">
+            <div class="app-content-wrapper">
+                @RenderBody()
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
         </main>
+
+        <!-- FOOTER -->
+        <footer class="app-footer py-2">
+            <div class="container-fluid px-3 px-md-4 d-flex justify-content-between align-items-center">
+                <span>&copy; @DateTime.Now.Year - CentroLuant · Intranet clínica</span>
+                <span class="text-muted d-none d-sm-inline">Desarrollado por Grupo 8</span>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - CentroLuant - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
