@@ -12,7 +12,6 @@ namespace CentroLuant.DataAccess
             _connectionString = connectionString;
         }
 
-        // Listar usuarios
         public List<Usuario> ObtenerUsuarios()
         {
             var lista = new List<Usuario>();
@@ -41,7 +40,6 @@ namespace CentroLuant.DataAccess
             return lista;
         }
 
-        // Insertar usuario
         public void CrearUsuario(Usuario u)
         {
             using (var cn = new SqlConnection(_connectionString))

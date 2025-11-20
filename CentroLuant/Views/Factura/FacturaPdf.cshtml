@@ -1,0 +1,167 @@
+﻿@model CentroLuant.Models.FacturaEmitidaViewModel
+@{
+    Layout = null;  // <- muy importante: sin navbar, sin layout
+    var factura = Model.Factura;
+    var p = Model.Paciente;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Factura @factura.ID_Factura</title>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 12px;
+            color: #0F172A;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            width: 780px; /* aprox A4 con márgenes */
+            margin: 20px auto;
+            padding: 24px 32px 28px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+
+        .clinic-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        .clinic-sub {
+            font-size: 11px;
+            color: #64748B;
+        }
+
+        .invoice-box {
+            text-align: right;
+            font-size: 11px;
+        }
+
+            .invoice-box span.label {
+                color: #94A3B8;
+                text-transform: uppercase;
+                letter-spacing: .12em;
+                font-size: 9px;
+                display: block;
+            }
+
+        .section-title {
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-size: 10px;
+            color: #94A3B8;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .patient-data,
+        .summary {
+            font-size: 11px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+            .summary-row strong {
+                font-size: 12px;
+            }
+
+        .services-box {
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 11px;
+            background: #F9FAFB;
+            white-space: pre-wrap;
+        }
+
+        .footer {
+            margin-top: 26px;
+            border-top: 1px solid #E5E7EB;
+            padding-top: 8px;
+            font-size: 10px;
+            color: #9CA3AF;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div>
+                <div class="clinic-name">CENTRO ODONTOLÓGICO LUANT</div>
+                <div class="clinic-sub">
+                    Atención integral odontológica · Tel: (XXX) XXX-XXX<br />
+                    Dirección de la clínica · Ciudad
+                </div>
+            </div>
+            <div class="invoice-box">
+                <span class="label">Factura</span>
+                <div><strong>#@factura.ID_Factura</strong></div>
+                <div>Fecha: @factura.FechaEmision.ToString("dd/MM/yyyy")</div>
+                <div>Estado: @factura.EstadoPago</div>
+            </div>
+        </div>
+
+        <div class="section-title">Datos del paciente</div>
+        <div class="patient-data">
+            @if (p != null)
+            {
+                <div><strong>@p.Nombres @p.Apellidos</strong></div>
+                <div>DNI: @p.DNI</div>
+                if (!string.IsNullOrWhiteSpace(p.Telefono))
+                {
+                    <div>Teléfono: @p.Telefono</div>
+                }
+                if (!string.IsNullOrWhiteSpace(p.CorreoElectronico))
+                {
+                    <div>Correo: @p.CorreoElectronico</div>
+                }
+            }
+            else
+            {
+                <div><strong>DNI:</strong> @factura.DNI_Paciente</div>
+            }
+        </div>
+
+        <div class="section-title">Servicios facturados</div>
+        <div class="services-box">
+            @factura.DescripcionServicios
+        </div>
+
+        <div class="section-title">Resumen</div>
+        <div class="summary">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>S/ @factura.MontoTotal.ToString("0.00")</span>
+            </div>
+            <div class="summary-row">
+                <span>Total</span>
+                <strong>S/ @factura.MontoTotal.ToString("0.00")</strong>
+            </div>
+        </div>
+
+        <div class="footer">
+            Esta factura corresponde a los servicios odontológicos brindados al paciente indicado.
+            <br />Gracias por confiar en Centro Odontológico Luant.
+        </div>
+    </div>
+</body>
+</html>

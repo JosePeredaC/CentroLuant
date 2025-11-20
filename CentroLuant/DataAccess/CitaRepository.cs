@@ -12,7 +12,6 @@ namespace CentroLuant.DataAccess
             _connectionString = connectionString;
         }
 
-        // Listar citas (opcionalmente filtradas por fecha)
         public List<Cita> ObtenerCitas(DateTime? fecha = null)
         {
             var lista = new List<Cita>();

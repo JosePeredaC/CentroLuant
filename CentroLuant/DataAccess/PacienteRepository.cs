@@ -12,7 +12,6 @@ namespace CentroLuant.DataAccess
             _connectionString = connectionString;
         }
 
-        // INSERTAR PACIENTE
         public bool InsertarPaciente(Paciente paciente)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -39,7 +38,6 @@ namespace CentroLuant.DataAccess
             }
         }
 
-        // CONSULTAR POR DNI
         public Paciente? ConsultarPacientePorDNI(string dni)
         {
             Paciente? paciente = null;
@@ -72,7 +70,6 @@ namespace CentroLuant.DataAccess
             return paciente;
         }
 
-        // CONSULTAR TODOS
         public List<Paciente> ConsultarTodosLosPacientes()
         {
             var pacientes = new List<Paciente>();
@@ -104,7 +101,6 @@ namespace CentroLuant.DataAccess
             return pacientes;
         }
 
-        // EDITAR PACIENTE
         public bool EditarPaciente(Paciente p)
         {
             using var cn = new SqlConnection(_connectionString);
@@ -132,7 +128,6 @@ namespace CentroLuant.DataAccess
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        // ELIMINAR PACIENTE
         public bool EliminarPaciente(string dni, out string? mensajeError)
         {
             mensajeError = null;
@@ -140,7 +135,6 @@ namespace CentroLuant.DataAccess
             using var cn = new SqlConnection(_connectionString);
             cn.Open();
 
-            // 1) Verificar si tiene historial médico
             const string sqlHist = "SELECT COUNT(*) FROM Historial_Medico WHERE DNI_Paciente = @DNI";
             using (var cmdHist = new SqlCommand(sqlHist, cn))
             {
@@ -154,7 +148,6 @@ namespace CentroLuant.DataAccess
                 }
             }
 
-            // 2) Verificar si tiene citas asociadas
             const string sqlCitas = "SELECT COUNT(*) FROM Cita WHERE DNI_Paciente = @DNI";
             using (var cmdCita = new SqlCommand(sqlCitas, cn))
             {
@@ -168,7 +161,6 @@ namespace CentroLuant.DataAccess
                 }
             }
 
-            // 3) Si no tiene historial ni citas → se puede borrar
             const string sqlDelete = "DELETE FROM Paciente WHERE DNI = @DNI";
             using (var cmdDel = new SqlCommand(sqlDelete, cn))
             {
@@ -180,7 +172,6 @@ namespace CentroLuant.DataAccess
 
 
 
-        // OBTENER PACIENTE A PARTIR DE UN ID_HISTORIAL
         public Paciente? ConsultarPacientePorHistorial(int idHistorial)
         {
             const string sql = @"

@@ -1,0 +1,235 @@
+﻿@model (CentroLuant.Models.Paciente Paciente, List<CentroLuant.Models.Tratamiento> Tratamientos)
+
+@{
+    ViewData["Title"] = "Servicios para facturar";
+}
+
+<style>
+    .fact-panel-wrapper {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px 20px 40px;
+    }
+
+    .fact-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 10px 28px rgba(15,23,42,0.08);
+        padding: 22px 24px 26px;
+    }
+
+    .fact-header-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 4px;
+    }
+
+    .fact-header-subtitle {
+        font-size: .9rem;
+        color: #64748B;
+        margin-bottom: 0;
+    }
+
+    .small-muted {
+        font-size: .8rem;
+        color: #94A3B8;
+    }
+
+    .fact-section-title {
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        color: #94A3B8;
+        font-weight: 600;
+        margin-bottom: 8px;
+        margin-top: 10px;
+    }
+
+    .form-label {
+        font-size: .9rem;
+        font-weight: 500;
+        color: #0F172A;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        border-color: #E2E8F0;
+        font-size: .9rem;
+    }
+
+    .fact-table thead th {
+        background: #F8FAFC;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: .8rem;
+        color: #475569;
+    }
+
+    .fact-table tbody td {
+        font-size: .85rem;
+        vertical-align: middle;
+    }
+
+    .btn-pill {
+        border-radius: 999px;
+        padding: 9px 22px;
+        font-weight: 600;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        font-size: .8rem;
+    }
+</style>
+
+<div class="fact-panel-wrapper">
+    <div class="fact-card">
+        <div class="mb-3">
+            <h2 class="fact-header-title">Servicios a facturar</h2>
+            <p class="fact-header-subtitle">
+                Seleccione los tratamientos que desea incluir en la factura. El monto total se actualizará automáticamente.
+            </p>
+        </div>
+
+        <!-- Datos del paciente -->
+        <div class="mb-3">
+            <div class="fact-section-title">Paciente</div>
+            <div>
+                <strong>@Model.Paciente.Nombres @Model.Paciente.Apellidos</strong><br />
+                <span class="small-muted">
+                    DNI: @Model.Paciente.DNI ·
+                    Tel: @(Model.Paciente.Telefono ?? "-") ·
+                    Correo: @(Model.Paciente.CorreoElectronico ?? "-")
+                </span>
+            </div>
+        </div>
+
+        @if (!Model.Tratamientos.Any())
+        {
+            <div class="alert alert-warning mb-0">
+                El paciente no tiene tratamientos registrados para facturar.
+            </div>
+        }
+        else
+        {
+            <form asp-action="GenerarFactura" method="post">
+                <input type="hidden" name="dni" value="@Model.Paciente.DNI" />
+
+                <div class="fact-section-title">Tratamientos realizados</div>
+
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm fact-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">
+                                    <input type="checkbox" id="chk-all" />
+                                </th>
+                                <th>Fecha</th>
+                                <th>Tratamiento</th>
+                                <th>Diagnóstico</th>
+                                <th class="text-end">Costo (S/)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Tratamientos)
+                            {
+                                var desc = $"- {t.TipoTratamiento} ({t.FechaTratamiento:dd/MM/yyyy}) - S/ {t.Costo:0.00}";
+                                <tr>
+                                    <td>
+                                        <input type="checkbox"
+                                               class="chk-servicio"
+                                               data-desc="@desc"
+                                               data-amount="@t.Costo" />
+                                    </td>
+                                    <td>@t.FechaTratamiento.ToString("dd/MM/yyyy")</td>
+                                    <td>@t.TipoTratamiento</td>
+                                    <td>@t.Diagnostico</td>
+                                    <td class="text-end">S/ @t.Costo.ToString("0.00")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row g-3 mt-3">
+                    <div class="col-md-7">
+                        <label class="form-label">Detalle de la factura</label>
+                        <textarea class="form-control" id="fact-descripcion" name="descripcion" rows="6"
+                              placeholder="Se generará automáticamente a partir de los servicios seleccionados."></textarea>
+                        <div class="small-muted mt-1">
+                            Puede editar este texto antes de confirmar la factura.
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label">Monto total (S/)</label>
+                        <input type="number"
+                               id="fact-total"
+                               name="total"
+                               class="form-control mb-3"
+                               step="0.01"
+                               min="0"
+                               value="0.00" />
+
+                        <div class="small-muted mb-3">
+                            El total se recalcula según los tratamientos seleccionados.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-pill">
+                                Generar factura
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const checks = document.querySelectorAll('.chk-servicio');
+            const totalInput = document.getElementById('fact-total');
+            const descArea = document.getElementById('fact-descripcion');
+            const chkAll = document.getElementById('chk-all');
+
+            if (!checks.length) return;
+
+            function recalcular() {
+                let total = 0;
+                let lineas = [];
+
+                checks.forEach(ch => {
+                    if (ch.checked) {
+                        const monto = parseFloat(ch.dataset.amount || "0");
+                        total += monto;
+                        if (ch.dataset.desc) {
+                            lineas.push(ch.dataset.desc);
+                        }
+                    }
+                });
+
+                totalInput.value = total.toFixed(2);
+                descArea.value = lineas.join('\r\n');
+            }
+
+            checks.forEach(ch => ch.addEventListener('change', recalcular));
+
+            if (chkAll) {
+                chkAll.addEventListener('change', function () {
+                    checks.forEach(ch => ch.checked = chkAll.checked);
+                    recalcular();
+                });
+            }
+
+            // Inicial: marcar todos y calcular
+            checks.forEach(ch => ch.checked = true);
+            recalcular();
+        })();
+    </script>
+}

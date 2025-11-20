@@ -1,0 +1,46 @@
+﻿@model CentroLuant.Models.HistorialMedico
+@{
+    ViewData["Title"] = "Editar historial clínico";
+    var paciente = ViewBag.Paciente as CentroLuant.Models.Paciente;
+}
+
+<div class="panel-wrapper" style="max-width:800px;margin:0 auto;padding:24px 0 40px;">
+    <div class="fact-card" style="background:#fff;border-radius:16px;border:1px solid #E2E8F0;box-shadow:0 10px 28px rgba(15,23,42,.08);padding:22px 24px 26px;">
+        <h2 class="mb-2" style="font-size:1.3rem;font-weight:700;color:#0F172A;">
+            Editar historial clínico
+        </h2>
+        @if (paciente != null)
+        {
+            <p class="text-muted mb-3" style="font-size:.9rem;">
+                Paciente: <strong>@paciente.Nombres @paciente.Apellidos</strong> · DNI: @paciente.DNI
+            </p>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <form asp-action="EditarHistorial" method="post">
+            <input type="hidden" asp-for="ID_Historial" />
+            <input type="hidden" asp-for="DNI_Paciente" />
+
+            <div class="mb-3">
+                <label class="form-label">Observaciones iniciales</label>
+                <textarea asp-for="ObservacionesIniciales"
+                          class="form-control"
+                          rows="6"
+                          style="border-radius:10px;border-color:#E2E8F0;"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a asp-action="Historial" asp-route-dni="@Model.DNI_Paciente" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

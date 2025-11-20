@@ -20,7 +20,10 @@ namespace CentroLuant.Controllers
             _histRepo = new HistorialRepository(conn);
         }
 
-        // Búsqueda y visualización del historial
+        // ================================================================
+        //                     VISUALIZAR HISTORIAL
+        // ================================================================
+
         [HttpGet]
         public IActionResult Historial(string? dni)
         {
@@ -29,6 +32,7 @@ namespace CentroLuant.Controllers
             if (!string.IsNullOrWhiteSpace(dni))
             {
                 var paciente = _pacRepo.ConsultarPacientePorDNI(dni);
+
                 if (paciente == null)
                 {
                     ViewBag.Error = "No existe un paciente registrado con ese DNI.";
@@ -61,7 +65,73 @@ namespace CentroLuant.Controllers
             return View(vm);
         }
 
-        // Registrar tratamiento
+        // ================================================================
+        //                     EDITAR HISTORIAL
+        // ================================================================
+
+        [Authorize(Roles = "Administrador,Especialista")]
+        public IActionResult EditarHistorial(int idHistorial)
+        {
+            var historial = _histRepo.ObtenerPorId(idHistorial);
+            if (historial == null) return NotFound();
+
+            var paciente = _pacRepo.ConsultarPacientePorHistorial(idHistorial);
+
+            ViewBag.Paciente = paciente;
+            return View(historial);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Especialista")]
+        public IActionResult EditarHistorial(HistorialMedico model)
+        {
+            if (!_histRepo.ActualizarHistorial(model.ID_Historial, model.ObservacionesIniciales))
+            {
+                ViewBag.Error = "No se pudo guardar los cambios del historial.";
+                return View(model);
+            }
+
+            TempData["msg"] = "Historial clínico actualizado correctamente.";
+            return RedirectToAction("Historial", new { dni = model.DNI_Paciente });
+        }
+
+        // ================================================================
+        //                     EDITAR TRATAMIENTO
+        // ================================================================
+
+        [Authorize(Roles = "Administrador,Especialista")]
+        public IActionResult EditarTratamiento(int id)
+        {
+            var tratamiento = _histRepo.ObtenerTratamientoPorId(id);
+            if (tratamiento == null) return NotFound();
+
+            return View(tratamiento);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Especialista")]
+        public IActionResult EditarTratamiento(Tratamiento model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (!_histRepo.ActualizarTratamiento(model))
+            {
+                ViewBag.Error = "No se pudo actualizar el tratamiento.";
+                return View(model);
+            }
+
+            TempData["msg"] = "Tratamiento actualizado correctamente.";
+
+            return RedirectToAction("Historial", new { dni = model.DNI_Paciente });
+        }
+
+        // ================================================================
+        //                     REGISTRAR TRATAMIENTO
+        // ================================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RegistrarTratamiento(Tratamiento t)

@@ -21,8 +21,6 @@ namespace CentroLuant.Controllers
         {
             using var sha = SHA256.Create();
             var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            // 👇 Igual que lo que ya hay en la tabla Usuario
             return Convert.ToBase64String(bytes);
         }
 
@@ -60,14 +58,12 @@ namespace CentroLuant.Controllers
             var usuario = _repo.ObtenerPorId(id);
             if (usuario == null) return NotFound();
 
-            // 1. No permitir desactivarse a sí mismo
             if (User.Identity?.Name == usuario.UsuarioLogin)
             {
                 TempData["msg"] = "No puedes desactivar tu propia cuenta.";
                 return RedirectToAction("Index");
             }
 
-            // 2. Si el usuario es administrador → proteger
             if (usuario.Rol == "Administrador" && usuario.Activo)
             {
                 int adminsActivos = _repo.ContarAdminsActivos();
@@ -103,9 +99,7 @@ namespace CentroLuant.Controllers
             var usuario = _repo.ObtenerPorId(id);
             if (usuario == null) return NotFound();
 
-            // No permitir activar administradores deshabilitados si eso genera riesgos (esto es opcional)
-            // En realidad activar no tiene restricciones serias, así que lo permitimos.
-
+            
             _repo.ActivarUsuario(id);
 
             TempData["msg"] = "Usuario activado correctamente.";
@@ -116,14 +110,12 @@ namespace CentroLuant.Controllers
             var usuario = _repo.ObtenerPorId(id);
             if (usuario == null) return NotFound();
 
-            // 1. No se puede eliminar a uno mismo
             if (User.Identity?.Name == usuario.UsuarioLogin)
             {
                 TempData["msg"] = "No puedes eliminar tu propia cuenta.";
                 return RedirectToAction("Index");
             }
 
-            // 2. No se puede eliminar un administrador
             if (usuario.Rol == "Administrador")
             {
                 TempData["msg"] = "No se puede eliminar una cuenta de administrador.";

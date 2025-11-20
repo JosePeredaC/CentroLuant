@@ -134,6 +134,11 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                                <li class="nav-item">
+                                    <a class="nav-link app-link styles-nav" asp-controller="Home" asp-action="Index">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
+                                </li>
                                 @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
                                 {
                                     <li class="nav-item">
@@ -142,12 +147,6 @@
                                         </a>
                                     </li>
                                 }
-                                <li class="nav-item">
-                                    <a class="nav-link app-link styles-nav" asp-controller="Home" asp-action="Index">
-                                        <i class="bi bi-speedometer2"></i> Dashboard
-                                    </a>
-                                </li>
-
                                 <li class="nav-item">
                                     <a class="nav-link app-link styles-nav" asp-controller="Paciente" asp-action="Index">
                                         <i class="bi bi-people"></i> Pacientes
@@ -165,6 +164,14 @@
                                         <i class="bi bi-journal-medical"></i> Historial clínico
                                     </a>
                                 </li>
+                                @if (User.IsInRole("Recepcionista") || User.IsInRole("Administrador"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link app-link styles-nav" asp-controller="Factura" asp-action="Index">
+                                            <i class="bi bi-receipt"></i> Facturación
+                                        </a>
+                                    </li>
+                                }
 
                             </ul>
                         }

@@ -85,8 +85,11 @@
         <form asp-action="Historial" method="get" class="row g-3 align-items-end">
             <div class="col-md-4">
                 <label class="form-label">DNI del paciente</label>
-                <input type="text" name="dni" maxlength="8" class="form-control"
-                       value="@Context.Request.Query["dni"]"
+                <input type="text"
+                       name="dni"
+                       maxlength="8"
+                       class="form-control"
+                       value="@Context.Request.Query["dni"]" />
                 <div class="small-muted mt-1">
                     Ingrese el DNI y presione <strong>Buscar</strong>.
                 </div>
@@ -137,9 +140,19 @@
                         Correo: @Model.Paciente.CorreoElectronico ?? "-"
                     </div>
                 </div>
-                <div class="text-end small-muted">
-                    Historial N.º @Model.Historial.ID_Historial<br />
-                    Creado: @Model.Historial.FechaCreacion.ToString("dd/MM/yyyy")
+
+                <div class="text-end">
+                    <div class="small-muted">
+                        Historial N.º @Model.Historial.ID_Historial<br />
+                        Creado: @Model.Historial.FechaCreacion.ToString("dd/MM/yyyy")
+                    </div>
+
+                    <!-- 🔹 BOTÓN EDITAR HISTORIAL -->
+                    <a asp-action="EditarHistorial"
+                       asp-route-idHistorial="@Model.Historial.ID_Historial"
+                       class="btn btn-sm btn-outline-primary mt-2">
+                        Editar historial
+                    </a>
                 </div>
             </div>
 
@@ -165,6 +178,7 @@
                                         <th>Tipo</th>
                                         <th>Diagnóstico</th>
                                         <th class="text-end">Costo</th>
+                                        <th class="text-end">Acciones</th> @* NUEVA COLUMNA *@
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -175,6 +189,14 @@
                                             <td>@t.TipoTratamiento</td>
                                             <td>@t.Diagnostico</td>
                                             <td class="text-end">S/ @t.Costo.ToString("0.00")</td>
+                                            <td class="text-end">
+                                                <!-- 🔹 BOTÓN EDITAR TRATAMIENTO -->
+                                                <a asp-action="EditarTratamiento"
+                                                   asp-route-id="@t.ID_Tratamiento"
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    Editar
+                                                </a>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>

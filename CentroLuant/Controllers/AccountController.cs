@@ -22,19 +22,14 @@ namespace CentroLuant.Controllers
             _repo = new UsuarioRepository(conn);
         }
 
-        // HASH seguro
         private string Hash(string input)
         {
             using var sha = SHA256.Create();
             var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
 
-            // Formato correcto: Base64 (coincide con tu base de datos)
             return Convert.ToBase64String(bytes);
         }
 
-        // ======================
-        // LOGIN GET
-        // ======================
         [HttpGet]
         public IActionResult Login()
         {
@@ -44,9 +39,6 @@ namespace CentroLuant.Controllers
             return View();
         }
 
-        // ======================
-        // LOGIN POST
-        // ======================
         [HttpPost]
         public async Task<IActionResult> Login(string usuario, string contrasena)
         {
@@ -64,7 +56,6 @@ namespace CentroLuant.Controllers
                 return View();
             }
 
-            // Crear Claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UsuarioLogin),
@@ -87,9 +78,6 @@ namespace CentroLuant.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // ======================
-        // LOGOUT
-        // ======================
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

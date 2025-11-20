@@ -1,0 +1,131 @@
+﻿@model CentroLuant.Models.FacturaEmitidaViewModel
+
+@{
+    ViewData["Title"] = "Factura emitida";
+}
+
+<style>
+    .fact-panel-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 24px 20px 40px;
+    }
+
+    .fact-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 10px 28px rgba(15,23,42,0.08);
+        padding: 22px 26px 26px;
+    }
+
+    .fact-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .fact-title-main {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 4px;
+    }
+
+    .fact-subtitle {
+        font-size: .85rem;
+        color: #64748B;
+        margin-bottom: 0;
+    }
+
+    .pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .75rem;
+        background: #DCFCE7;
+        color: #166534;
+        font-weight: 600;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .fact-section-title {
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        color: #94A3B8;
+        font-weight: 600;
+        margin-bottom: 8px;
+        margin-top: 14px;
+    }
+
+    .small-muted {
+        font-size: .8rem;
+        color: #94A3B8;
+    }
+
+    pre {
+        background: #F9FAFB;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: .85rem;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="fact-panel-wrapper">
+    <div class="fact-card">
+        <div class="fact-header">
+            <div>
+                <h2 class="fact-title-main">Factura #@Model.Factura.ID_Factura</h2>
+                <p class="fact-subtitle">
+                    Emitida el @Model.Factura.FechaEmision.ToString("dd/MM/yyyy")
+                </p>
+            </div>
+            <div class="text-end">
+                <div class="pill">Pendiente de pago</div>
+                <div class="small-muted mt-2">
+                    DNI paciente: @Model.Factura.DNI_Paciente
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Paciente != null)
+        {
+            <div class="fact-section-title">Datos del paciente</div>
+            <div class="mb-2">
+                <strong>@Model.Paciente.Nombres @Model.Paciente.Apellidos</strong><br />
+                <span class="small-muted">
+                    DNI: @Model.Paciente.DNI ·
+                    Tel: @(Model.Paciente.Telefono ?? "-") ·
+                    Correo: @(Model.Paciente.CorreoElectronico ?? "-")
+                </span>
+            </div>
+        }
+
+        <div class="fact-section-title">Detalle de servicios</div>
+        <pre>@Model.Factura.DescripcionServicios</pre>
+
+        <div class="fact-section-title">Resumen de importe</div>
+        <div class="d-flex justify-content-between mb-3">
+            <span class="small-muted">Monto total</span>
+            <strong>S/ @Model.Factura.MontoTotal.ToString("0.00")</strong>
+        </div>
+
+        <div class="d-flex justify-content-between mt-3">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Volver a facturación
+            </a>
+
+            @* Botón PDF: funcionará cuando implementes la acción DescargarPdf *@
+            <a asp-action="DescargarPdf"
+               asp-route-id="@Model.Factura.ID_Factura"
+               class="btn btn-primary"
+               target="_blank">
+                Descargar PDF
+            </a>
+        </div>
+    </div>
+</div>

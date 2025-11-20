@@ -1,0 +1,58 @@
+﻿@model CentroLuant.Models.Tratamiento
+@{
+    ViewData["Title"] = "Editar tratamiento";
+}
+
+<div class="panel-wrapper" style="max-width:780px;margin:0 auto;padding:24px 0 40px;">
+    <div class="fact-card" style="background:#fff;border-radius:16px;border:1px solid #E2E8F0;box-shadow:0 10px 28px rgba(15,23,42,.08);padding:22px 24px 26px;">
+        <h2 class="mb-3" style="font-size:1.25rem;font-weight:700;color:#0F172A;">
+            Editar tratamiento
+        </h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <form asp-action="EditarTratamiento" method="post">
+            <input type="hidden" asp-for="ID_Tratamiento" />
+            <input type="hidden" asp-for="ID_Historial" />
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Fecha</label>
+                    <input asp-for="FechaTratamiento" type="date" class="form-control" />
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label">Tipo de tratamiento</label>
+                    <input asp-for="TipoTratamiento" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Diagnóstico</label>
+                    <input asp-for="Diagnostico" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Observaciones</label>
+                    <textarea asp-for="Observaciones" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Costo (S/)</label>
+                    <input asp-for="Costo" type="number" step="0.01" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a asp-action="Historial" asp-route-idHistorial="@Model.ID_Historial" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

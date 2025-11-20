@@ -12,7 +12,6 @@ namespace CentroLuant.DataAccess
             _connectionString = connectionString;
         }
 
-        // Obtener historial por DNI (si no existe, null)
         public HistorialMedico? ObtenerPorDni(string dni)
         {
             const string sql = @"
@@ -40,8 +39,71 @@ namespace CentroLuant.DataAccess
 
             return null;
         }
+        public bool ActualizarHistorial(int idHistorial, string? observaciones)
+        {
+            using var cn = new SqlConnection(_connectionString);
+            const string sql = @"UPDATE Historial_Medico
+                         SET ObservacionesIniciales = @Obs
+                         WHERE ID_Historial = @Id";
 
-        // Crear historial si no existe
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@Obs", (object?)observaciones ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Id", idHistorial);
+
+            cn.Open();
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        // Obtener un tratamiento por ID
+        public Tratamiento? ObtenerTratamientoPorId(int idTratamiento)
+        {
+            using var cn = new SqlConnection(_connectionString);
+            const string sql = @"SELECT * FROM Tratamiento WHERE ID_Tratamiento = @Id";
+
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@Id", idTratamiento);
+
+            cn.Open();
+            using var dr = cmd.ExecuteReader();
+            if (!dr.Read()) return null;
+
+            return new Tratamiento
+            {
+                ID_Tratamiento = (int)dr["ID_Tratamiento"],
+                ID_Historial = (int)dr["ID_Historial"],
+                FechaTratamiento = (DateTime)dr["FechaTratamiento"],
+                Diagnostico = dr["Diagnostico"]?.ToString(),
+                TipoTratamiento = dr["TipoTratamiento"].ToString()!,
+                Observaciones = dr["Observaciones"]?.ToString(),
+                Costo = (decimal)dr["Costo"]
+            };
+        }
+
+        // Actualizar un tratamiento
+        public bool ActualizarTratamiento(Tratamiento t)
+        {
+            using var cn = new SqlConnection(_connectionString);
+            const string sql = @"
+        UPDATE Tratamiento SET
+            FechaTratamiento = @Fecha,
+            Diagnostico      = @Diagnostico,
+            TipoTratamiento  = @Tipo,
+            Observaciones    = @Obs,
+            Costo            = @Costo
+        WHERE ID_Tratamiento = @Id";
+
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@Fecha", t.FechaTratamiento);
+            cmd.Parameters.AddWithValue("@Diagnostico", (object?)t.Diagnostico ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Tipo", t.TipoTratamiento);
+            cmd.Parameters.AddWithValue("@Obs", (object?)t.Observaciones ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Costo", t.Costo);
+            cmd.Parameters.AddWithValue("@Id", t.ID_Tratamiento);
+
+            cn.Open();
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
         public HistorialMedico CrearHistorial(string dni, string? observacionesIniciales = null)
         {
             const string sql = @"
@@ -124,5 +186,33 @@ namespace CentroLuant.DataAccess
             cn.Open();
             cmd.ExecuteNonQuery();
         }
+        public HistorialMedico? ObtenerPorId(int idHistorial)
+        {
+            const string sql = @"
+                SELECT ID_Historial, DNI_Paciente, FechaCreacion, ObservacionesIniciales
+                FROM Historial_Medico
+                WHERE ID_Historial = @Id";
+
+            using var cn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@Id", idHistorial);
+
+            cn.Open();
+            using var dr = cmd.ExecuteReader();
+
+            if (!dr.Read())
+                return null;
+
+            return new HistorialMedico
+            {
+                ID_Historial = (int)dr["ID_Historial"],
+                DNI_Paciente = dr["DNI_Paciente"].ToString()!,
+                FechaCreacion = (DateTime)dr["FechaCreacion"],
+                ObservacionesIniciales = dr["ObservacionesIniciales"] as string
+            };
+        }
+
+
+        
     }
 }

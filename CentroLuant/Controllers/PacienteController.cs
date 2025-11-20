@@ -14,14 +14,12 @@ namespace CentroLuant.Controllers
             _repo = repo;
         }
 
-        // CUS 05: Consultar datos personales
         public IActionResult Index()
         {
             var pacientes = _repo.ConsultarTodosLosPacientes();
             return View(pacientes);
         }
 
-        // Detalle de paciente
         public IActionResult Detalle(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return NotFound();
@@ -32,13 +30,11 @@ namespace CentroLuant.Controllers
             return View(paciente);
         }
 
-        // CUS 02: Registrar datos personales (GET)
         public IActionResult Crear()
         {
             return View();
         }
 
-        // CUS 02: Registrar datos personales (POST)
         [HttpPost]
         public IActionResult Crear(Paciente model)
         {
@@ -50,7 +46,6 @@ namespace CentroLuant.Controllers
                 return View(model);
             }
 
-            // Validar duplicado
             var existente = _repo.ConsultarPacientePorDNI(model.DNI);
             if (existente != null)
             {
@@ -58,13 +53,11 @@ namespace CentroLuant.Controllers
                 return View(model);
             }
 
-            // Guardar
             _repo.InsertarPaciente(model);
             TempData["msg"] = "Paciente registrado correctamente.";
             return RedirectToAction("Index");
         }
 
-        // Editar datos personales (GET)
         public IActionResult Editar(string id)
         {
             var p = _repo.ConsultarPacientePorDNI(id);
@@ -73,7 +66,6 @@ namespace CentroLuant.Controllers
             return View(p);
         }
 
-        // Editar datos personales (POST)
         [HttpPost]
         public IActionResult Editar(Paciente model)
         {
