@@ -1,5 +1,11 @@
 wwwroot\css\site.css
 wwwroot\favicon.ico
+wwwroot\img\fondo-login.jpg
+wwwroot\img\gestion-citas.jpg
+wwwroot\img\gestion-clinica.jpg
+wwwroot\img\gestion-paciente.jpg
+wwwroot\img\icono-logo.png
+wwwroot\img\logo.png
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -58,6 +64,5 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\img\icono-logo.png
-wwwroot\img\fondo-login.jpg
-wwwroot\img\logo.png
+wwwroot\Rotative\wkhtmltoimage.exe
+wwwroot\Rotative\wkhtmltopdf.exe

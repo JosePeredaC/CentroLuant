@@ -1,0 +1,106 @@
+﻿@model CentroLuant.Models.HistorialMedico
+@using CentroLuant.Models
+@{
+    ViewData["Title"] = "Registrar Historial Médico";
+    var paciente = ViewBag.Paciente as Paciente;
+}
+
+<style>
+    /* Usar estilos consistentes */
+    .panel-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 0;
+    }
+
+    .panel-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0;
+    }
+
+    .panel-subtitle {
+        margin: 4px 0 0;
+        color: #64748B;
+        font-size: .95rem;
+    }
+
+    .panel-card {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+        padding: 25px;
+    }
+</style>
+
+<div class="panel-wrapper">
+    <div class="mb-4">
+        <h1 class="panel-title">@ViewData["Title"]</h1>
+        <p class="panel-subtitle">Permite a la recepcionista crear el registro clínico inicial para un paciente ya existente.</p>
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary mt-2">
+            <i class="fas fa-arrow-left me-1"></i> Volver a Pacientes
+        </a>
+    </div>
+
+    @* --- Búsqueda (CUS 03 - Pasos 2-3) --- *@
+    <div class="panel-card mb-4">
+        <h5 class="mb-3 text-primary"><i class="fas fa-search me-2"></i> Buscar Paciente</h5>
+        <form asp-action="CrearHistorial" method="get">
+            <div class="input-group">
+                <input type="text" name="dni" class="form-control form-control-lg"
+                       placeholder="Ingrese DNI del paciente" value="@Model.DNI_Paciente" required>
+                <button class="btn btn-outline-primary btn-lg" type="submit">
+                    Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @* --- Mensajes y Errores --- *@
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Error))
+    {
+        <div class="alert alert-danger mb-4 rounded-3">
+            <i class="fas fa-exclamation-triangle me-1"></i> @ViewBag.Error
+        </div>
+    }
+
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-success mb-4 rounded-3">
+            <i class="fas fa-check-circle me-1"></i> @TempData["msg"]
+        </div>
+    }
+
+    @* --- Formulario de Registro (CUS 03 - Pasos 6-8) --- *@
+    @if (paciente != null && ViewBag.HistorialExistente == false)
+    {
+        <div class="panel-card mt-4">
+            <h5 class="mb-3 text-success"><i class="fas fa-file-medical me-2"></i> Confirmar y Crear Historial para: <span class="fw-bold">@paciente.NombreCompleto</span></h5>
+
+            <form asp-action="CrearHistorial" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="DNI_Paciente" value="@paciente.DNI" />
+
+                <div class="mb-3">
+                    <label asp-for="FechaCreacion" class="form-label fw-bold">Fecha de Creación:</label>
+                    <input asp-for="FechaCreacion" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" readonly />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ObservacionesIniciales" class="form-label fw-bold">Observaciones Iniciales (Opcional):</label>
+                    <textarea asp-for="ObservacionesIniciales" class="form-control" rows="4"
+                              placeholder="Ej: Paciente derivado de otro centro, alergias conocidas, etc."></textarea>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-lg btn-success">
+                        <i class="fas fa-save me-1"></i> Crear Historial Clínico
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

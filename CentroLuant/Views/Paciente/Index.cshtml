@@ -5,6 +5,7 @@
 }
 
 <style>
+    /* Estilos base (Mantenidos) */
     .panel-wrapper {
         max-width: 1100px;
         margin: 0 auto;
@@ -16,11 +17,11 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 18px;
+        margin-bottom: 24px;
     }
 
     .pac-title {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: #0F172A;
         margin: 0;
@@ -29,40 +30,65 @@
     .pac-subtitle {
         margin: 4px 0 0;
         color: #64748B;
-        font-size: .9rem;
+        font-size: .95rem;
     }
 
     .pac-table-card {
         background: #ffffff;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 24px;
         border: 1px solid #E2E8F0;
-        box-shadow: 0 6px 22px rgba(15,23,42,0.06);
+        box-shadow: 0 4px 12px rgba(15,23,42,0.06);
     }
 
     .btn-primary-soft {
-        border-radius: 10px;
-        padding: 8px 14px;
+        border-radius: 8px;
+        padding: 10px 16px;
         font-weight: 600;
         border: none;
         background: #3B82F6;
         color: #ffffff;
         white-space: nowrap;
+        transition: background 0.2s;
     }
+
+        .btn-primary-soft:hover {
+            background: #1D4ED8;
+        }
+
+    .btn-secondary-action {
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-weight: 600;
+        border: 1px solid #D1D5DB;
+        background: #F9FAFB;
+        color: #4B5563;
+        white-space: nowrap;
+        transition: background 0.2s;
+    }
+
+        .btn-secondary-action:hover {
+            background: #E5E7EB;
+        }
 
     .table thead th {
         background: #F8FAFC;
         color: #475569;
         font-weight: 600;
-        border-bottom: 1px solid #E2E8F0;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        border-bottom: 2px solid #E2E8F0;
+        padding-top: 12px;
+        padding-bottom: 12px;
     }
 
     .table tbody td {
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding-top: 12px;
+        padding-bottom: 12px;
         vertical-align: middle !important;
+        border-top: 1px solid #F1F5F9;
+    }
+
+    .table tbody tr:hover {
+        background-color: #F8FAFC;
     }
 
     .pac-actions {
@@ -77,45 +103,182 @@
         color: #64748B;
         font-size: .95rem;
     }
+
+    /* ===== BUSCADOR PREMIUM CON X ===== */
+
+    .search-card {
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+    }
+
+    .search-dni-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .search-dni-box {
+        width: 100%;
+        max-width: 700px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #F8FAFC;
+        border-radius: 999px;
+        padding: 6px 12px 6px 16px;
+        border: 1px solid #E2E8F0;
+        transition: 0.2s;
+    }
+
+        .search-dni-box:focus-within {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+            background: #ffffff;
+        }
+
+    .search-dni-icon {
+        font-size: 1.1rem;
+        color: #64748B;
+    }
+
+    .search-dni-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 1rem;
+        padding: 6px 8px;
+        color: #0F172A;
+    }
+
+        .search-dni-input::placeholder {
+            color: #94A3B8;
+        }
+
+    .search-dni-clear {
+        position: absolute;
+        right: 105px; /* espacio antes del botón Buscar */
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #9CA3AF;
+        font-size: 1.1rem;
+        padding: 0;
+        line-height: 1;
+    }
+
+        .search-dni-clear:hover {
+            color: #4B5563;
+        }
+
+    .search-dni-btn {
+        border: none;
+        background: #3B82F6;
+        color: white;
+        padding: 7px 22px;
+        border-radius: 999px;
+        font-size: .9rem;
+        font-weight: 600;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: 0.2s;
+    }
+
+        .search-dni-btn:hover {
+            background: #1D4ED8;
+        }
 </style>
 
 <div class="panel-wrapper">
 
     <div class="pac-header">
         <div>
-            <h2 class="pac-title">Pacientes</h2>
+            <h2 class="pac-title">Gestión de Pacientes</h2>
             <p class="pac-subtitle">
                 Registro y consulta de datos personales de los pacientes.
             </p>
         </div>
-        <a asp-action="Crear" class="btn-primary-soft">
-            + Registrar paciente
-        </a>
+
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="CrearHistorial" class="btn-secondary-action">
+                <i class="fas fa-file-medical me-1"></i> Registrar Historial
+            </a>
+
+            <a asp-action="Crear" class="btn-primary-soft">
+                <i class="fas fa-user-plus me-1"></i> Registrar paciente
+            </a>
+        </div>
     </div>
 
     @if (TempData["msg"] != null)
     {
-        <div class="alert alert-success mt-3">@TempData["msg"]</div>
+        <div class="alert alert-success mt-3 py-2 px-3 rounded-3">@TempData["msg"]</div>
     }
 
     @if (TempData["msgError"] != null)
     {
-        <div class="alert alert-warning mt-3">@TempData["msgError"]</div>
+        <div class="alert alert-warning mt-3 py-2 px-3 rounded-3">@TempData["msgError"]</div>
     }
 
+    <!-- 🔎 BUSCADOR POR DNI -->
+    <div class="card shadow-sm mb-3 search-card">
+        <div class="card-body">
+
+            <form asp-action="Index" method="get" id="formBuscarDni" class="search-dni-wrapper">
+
+                <div class="search-dni-box">
+                    <i class="fas fa-id-card search-dni-icon"></i>
+
+                    <input type="text"
+                           id="dniInput"
+                           name="dni"
+                           value="@(ViewBag.FiltroDni as string)"
+                           placeholder="Buscar paciente por DNI..."
+                           class="search-dni-input" />
+
+                    <!-- ❌ X para limpiar filtro -->
+                    <button type="button" id="btnClearDni" class="search-dni-clear">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+
+                    <button type="submit" class="search-dni-btn">
+                        <i class="fas fa-search"></i>
+                        <span>Buscar</span>
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    @if (ViewBag.MsgBusqueda != null)
+    {
+        <div class="alert alert-warning py-2 px-3 mb-3 rounded-3">
+            <i class="fas fa-info-circle me-1"></i> @ViewBag.MsgBusqueda
+        </div>
+    }
 
     <div class="pac-table-card">
         @if (Model == null || !Model.Any())
         {
             <div class="empty-state">
-                No hay pacientes registrados todavía.
-                Haz clic en <strong>"Registrar paciente"</strong> para agregar el primero.
+                <i class="fas fa-users-slash me-1"></i> No hay pacientes registrados para el criterio actual.
+                <br />
+                Puedes registrar uno nuevo con <strong>"Registrar paciente"</strong>
+                o intentar otra búsqueda por DNI.
             </div>
         }
         else
         {
             <div class="table-responsive">
-                <table class="table align-middle mb-0">
+                <table class="table align-middle mb-0 table-hover">
                     <thead>
                         <tr>
                             <th>DNI</th>
@@ -130,22 +293,23 @@
                         {
                             <tr>
                                 <td>@p.DNI</td>
-                                <td>@p.NombreCompleto</td>
+                                <td><span class="fw-bold">@p.NombreCompleto</span></td>
                                 <td>@p.Telefono</td>
                                 <td>@p.CorreoElectronico</td>
                                 <td class="text-end pac-actions">
                                     <a asp-action="Detalle" asp-route-id="@p.DNI"
-                                       class="btn btn-sm btn-outline-secondary">
-                                        Ver
+                                       class="btn btn-sm btn-outline-secondary" title="Ver Detalles">
+                                        <i class="fas fa-eye"></i> Ver
                                     </a>
                                     <a asp-action="Editar" asp-route-id="@p.DNI"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Editar
+                                       class="btn btn-sm btn-outline-primary" title="Editar Datos">
+                                        <i class="fas fa-edit"></i> Editar
                                     </a>
                                     <form asp-action="Eliminar" asp-route-id="@p.DNI" method="post"
                                           onsubmit="return confirm('¿Eliminar al paciente @p.NombreCompleto?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            Eliminar
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar Paciente">
+                                            <i class="fas fa-trash"></i> Eliminar
                                         </button>
                                     </form>
                                 </td>
@@ -157,3 +321,16 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const dniInput = document.getElementById("dniInput");
+        const btnClear = document.getElementById("btnClearDni");
+        const formBuscarDni = document.getElementById("formBuscarDni");
+
+        btnClear.addEventListener("click", function () {
+            dniInput.value = "";
+            formBuscarDni.submit();
+        });
+    </script>
+}

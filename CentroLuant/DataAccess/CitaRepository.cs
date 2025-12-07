@@ -158,5 +158,102 @@ namespace CentroLuant.DataAccess
             cn.Open();
             cmd.ExecuteNonQuery();
         }
+        // Dentro de la clase CitaRepository
+
+        public List<Cita> ObtenerCitasPorDNI(string dni)
+        {
+            var lista = new List<Cita>();
+
+            const string sql = @"
+                    SELECT C.ID_Cita, C.Fecha, C.Hora, C.Estado,
+                           C.DNI_Paciente, C.ID_Especialista,
+                           P.Nombres + ' ' + P.Apellidos AS PacienteNombre,
+                           U.NombreCompleto AS EspecialistaNombre
+                    FROM Cita C
+                    INNER JOIN Paciente P ON C.DNI_Paciente = P.DNI
+                    INNER JOIN Usuario U ON C.ID_Especialista = U.ID_Usuario
+                    WHERE C.DNI_Paciente = @DNI
+                    ORDER BY C.Fecha DESC, C.Hora DESC"; // Ordena por la cita más reciente
+
+            using var cn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@DNI", dni);
+
+            cn.Open();
+            using var dr = cmd.ExecuteReader();
+
+            while (dr.Read())
+            {
+                lista.Add(new Cita
+                {
+                    ID_Cita = (int)dr["ID_Cita"],
+                    Fecha = (DateTime)dr["Fecha"],
+                    Hora = (TimeSpan)dr["Hora"],
+                    Estado = dr["Estado"].ToString()!,
+                    DNI_Paciente = dr["DNI_Paciente"].ToString()!,
+                    ID_Especialista = (int)dr["ID_Especialista"],
+                    PacienteNombreCompleto = dr["PacienteNombre"].ToString(),
+                    EspecialistaNombre = dr["EspecialistaNombre"].ToString()
+                });
+            }
+
+            return lista;
+        }
+        public bool EspecialistaTieneChoque(DateTime fecha, TimeSpan hora, int idEspecialista)
+        {
+            const string sql = @"
+        SELECT COUNT(*) 
+        FROM Cita
+        WHERE Fecha = @Fecha
+        AND Hora = @Hora
+        AND ID_Especialista = @ID_Especialista
+        AND Estado <> 'Cancelada'";
+
+            using var cn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, cn);
+
+            cmd.Parameters.AddWithValue("@Fecha", fecha.Date);
+            cmd.Parameters.AddWithValue("@Hora", hora);
+            cmd.Parameters.AddWithValue("@ID_Especialista", idEspecialista);
+
+            cn.Open();
+            int count = (int)cmd.ExecuteScalar();
+
+            return count > 0;
+        }
+        public List<TimeSpan> ObtenerHorariosDisponibles(DateTime fecha)
+        {
+            var horarios = new List<TimeSpan>();
+
+            // Ejemplo: 9:00 - 17:00 cada 30 minutos
+            for (int h = 9; h <= 17; h++)
+            {
+                horarios.Add(new TimeSpan(h, 0, 0));
+                horarios.Add(new TimeSpan(h, 30, 0));
+            }
+
+            string sql = @"
+        SELECT Hora FROM Cita 
+        WHERE Fecha = @Fecha
+        AND Estado <> 'Cancelada'";
+
+            using var cn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, cn);
+
+            cmd.Parameters.AddWithValue("@Fecha", fecha.Date);
+
+            cn.Open();
+            using var dr = cmd.ExecuteReader();
+
+            var ocupados = new HashSet<TimeSpan>();
+
+            while (dr.Read())
+            {
+                ocupados.Add((TimeSpan)dr["Hora"]);
+            }
+
+            return horarios.Where(h => !ocupados.Contains(h)).ToList();
+        }
+
     }
 }

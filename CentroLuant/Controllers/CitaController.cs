@@ -22,28 +22,54 @@ namespace CentroLuant.Controllers
             _repoUsuarios = new UsuarioRepository(conn);
         }
 
-        public IActionResult Index(DateTime? fecha)
+        // ÚNICA pantalla: Agenda + búsqueda por paciente
+        public IActionResult Index(DateTime? fecha, string? dni)
         {
-            var citas = _repoCitas.ObtenerCitas(fecha);
-            ViewBag.FechaFiltro = fecha?.ToString("yyyy-MM-dd");
-            return View(citas);
+            var vm = new CitaPacienteViewModel();
+
+            vm.FechaFiltro = fecha?.ToString("yyyy-MM-dd");
+            vm.Agenda = _repoCitas.ObtenerCitas(fecha);
+
+            if (!string.IsNullOrWhiteSpace(dni))
+            {
+                var paciente = _repoPacientes.ConsultarPacientePorDNI(dni);
+
+                if (paciente == null)
+                {
+                    vm.MensajeError = "No se encontraron coincidencias. Verifique el DNI.";
+                }
+                else
+                {
+                    vm.Paciente = paciente;
+                    vm.Citas = _repoCitas.ObtenerCitasPorDNI(dni);
+                }
+
+                vm.DniBusqueda = dni;
+            }
+
+            return View(vm); // 👈 Index.cshtml usa CitaPacienteViewModel
         }
+
 
         // GET: Crear
-        public IActionResult Crear()
+        public IActionResult Crear(DateTime? fecha, TimeSpan? hora)
         {
-            var hoy = DateTime.Today;
-
-            var model = new Cita
+            var vm = new CitaCrearViewModel
             {
-                Fecha = hoy,
-                Hora = new TimeSpan(9, 0, 0),
-                Estado = "Programada"
+                FechaSeleccionada = fecha,
+                HoraSeleccionada = hora
             };
 
-            ViewBag.Especialistas = _repoUsuarios.ObtenerEspecialistasActivos();
-            return View(model);
+            if (fecha.HasValue)
+                vm.HorariosDisponibles = _repoCitas.ObtenerHorariosDisponibles(fecha.Value);
+
+            if (hora.HasValue)
+                vm.Especialistas = _repoUsuarios.ObtenerEspecialistasActivos();
+
+            return View(vm); 
         }
+
+
 
         // POST: Crear
         [HttpPost]
@@ -60,6 +86,11 @@ namespace CentroLuant.Controllers
             {
                 ModelState.AddModelError(nameof(model.Fecha),
                     "Debe seleccionar una fecha válida.");
+            }
+            if (model.Hora == default)
+            {
+                ModelState.AddModelError(nameof(model.Hora),
+                    "Debe seleccionar una hora válida.");
             }
 
             if (!ModelState.IsValid)
@@ -84,6 +115,12 @@ namespace CentroLuant.Controllers
                 return View(model);
             }
 
+            if (_repoCitas.EspecialistaTieneChoque(model.Fecha, model.Hora, model.ID_Especialista))
+            {
+                ViewBag.Error = "El especialista ya tiene una cita registrada en esa fecha y hora.";
+                ViewBag.Especialistas = _repoUsuarios.ObtenerEspecialistasActivos();
+                return View(model);
+            }
             if (string.IsNullOrWhiteSpace(model.Estado))
                 model.Estado = "Programada";
 
@@ -97,6 +134,7 @@ namespace CentroLuant.Controllers
             TempData["msg"] = "Cita registrada correctamente.";
             return RedirectToAction("Index");
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

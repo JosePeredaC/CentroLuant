@@ -24,6 +24,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/USER/source/repos/CentroLuant/CentroLuant/Views/Cita/Consultar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2l0YVxDb25zdWx0YXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/USER/source/repos/CentroLuant/CentroLuant/Views/Cita/Crear.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2l0YVxDcmVhci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -70,6 +74,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/USER/source/repos/CentroLuant/CentroLuant/Views/Paciente/Crear.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFjaWVudGVcQ3JlYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/USER/source/repos/CentroLuant/CentroLuant/Views/Paciente/CrearHistorial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFjaWVudGVcQ3JlYXJIaXN0b3JpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/USER/source/repos/CentroLuant/CentroLuant/Views/Paciente/Detalle.cshtml]

@@ -163,6 +163,15 @@
                     <input asp-for="CorreoElectronico" type="email" class="form-control" />
                     <span asp-validation-for="CorreoElectronico" class="text-danger small"></span>
                 </div>
+                <div class="col-md-4">
+                    <label asp-for="Genero" class="form-label required">Género</label>
+                    <select asp-for="Genero" class="form-select">
+                        <option value="">Seleccione...</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                    <span asp-validation-for="Genero" class="text-danger small"></span>
+                </div>
             </div>
 
             <div class="mb-3">

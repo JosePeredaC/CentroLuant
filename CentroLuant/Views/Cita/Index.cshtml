@@ -1,13 +1,13 @@
-﻿@model IEnumerable<CentroLuant.Models.Cita>
+﻿@model CentroLuant.Models.CitaPacienteViewModel
 
 @{
-    ViewData["Title"] = "Citas";
-    var fechaFiltro = ViewBag.FechaFiltro as string;
+    ViewData["Title"] = "Agenda y Consulta de Citas";
 }
 
 <style>
+    /* --------- ESTILOS GENERALES (COMUNES) ------------ */
     .panel-wrapper {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 20px 20px 40px;
     }
@@ -17,11 +17,11 @@
         justify-content: space-between;
         align-items: center;
         gap: 12px;
-        margin-bottom: 18px;
+        margin-bottom: 25px;
     }
 
     .panel-title {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: #0F172A;
         margin: 0;
@@ -30,40 +30,85 @@
     .panel-subtitle {
         margin: 4px 0 0;
         color: #64748B;
-        font-size: .9rem;
+        font-size: .95rem;
     }
 
     .panel-card {
         background: #ffffff;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 24px;
         border: 1px solid #E2E8F0;
-        box-shadow: 0 6px 22px rgba(15,23,42,0.06);
+        box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+    }
+
+    .card-header-search {
+        background-color: #F8FAFC !important;
+        border-bottom: 1px solid #E2E8F0;
+        color: #475569 !important;
+        font-weight: 600;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .bg-light-gray {
+        background-color: #F4F7FB;
+        border-radius: 8px;
+        padding: 10px 15px;
     }
 
     .btn-primary-soft {
-        border-radius: 10px;
-        padding: 8px 14px;
+        border-radius: 8px;
+        padding: 10px 16px;
         font-weight: 600;
         border: none;
-        background: #3B82F6;
+        background: #10B981;
         color: #ffffff;
         white-space: nowrap;
+        transition: background 0.2s;
     }
 
+        .btn-primary-soft:hover {
+            background: #059669;
+            color: #ffffff;
+        }
+
+    .btn-secondary-action {
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-weight: 600;
+        border: 1px solid #D1D5DB;
+        background: #F9FAFB;
+        color: #4B5563;
+        white-space: nowrap;
+        transition: background 0.2s;
+    }
+
+        .btn-secondary-action:hover {
+            background: #E5E7EB;
+        }
+
+    .form-control-custom {
+        border-radius: 8px;
+    }
+
+    /* Tabla */
     .table thead th {
         background: #F8FAFC;
         color: #475569;
         font-weight: 600;
-        border-bottom: 1px solid #E2E8F0;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        border-bottom: 2px solid #E2E8F0;
+        padding-top: 12px;
+        padding-bottom: 12px;
     }
 
     .table tbody td {
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding-top: 12px;
+        padding-bottom: 12px;
         vertical-align: middle !important;
+        border-top: 1px solid #F1F5F9;
+    }
+
+    .table tbody tr:hover {
+        background-color: #F8FAFC;
     }
 
     .cita-actions {
@@ -72,114 +117,347 @@
         justify-content: flex-end;
     }
 
+    /* Badges de estado */
     .badge-estado {
-        font-size: .75rem;
+        font-size: .8rem;
+        padding: 6px 10px;
+        border-radius: 9999px;
+        font-weight: 700;
+    }
+
+    .badge-programada {
+        background-color: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    .badge-cancelada {
+        background-color: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .badge-atendida {
+        background-color: #D1FAE5;
+        color: #065F46;
+    }
+
+    /* Datos personales */
+    .detail-section {
+        padding: 15px 0;
+    }
+
+    .detail-item {
+        margin-bottom: 10px;
+    }
+
+        .detail-item strong {
+            color: #334155;
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+    .detail-value {
+        color: #1E293B;
+        font-size: 1rem;
     }
 </style>
 
 <div class="panel-wrapper">
     <div class="panel-header">
         <div>
-            <h2 class="panel-title">Citas</h2>
+            <h1 class="panel-title">Agenda y Consulta de Citas</h1>
             <p class="panel-subtitle">
-                Agenda y control de citas por fecha, paciente y especialista.
+                Busque por paciente o revise la agenda general de citas.
             </p>
         </div>
 
-        <div class="d-flex align-items-center gap-2">
-            <form asp-action="Index" method="get" class="d-flex gap-1">
-                <input type="date"
-                       name="fecha"
-                       value="@fechaFiltro"
-                       class="form-control form-control-sm" />
-                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                    Filtrar
-                </button>
-            </form>
-
+        <div class="d-flex align-items-center gap-3">
             <a asp-action="Crear" class="btn-primary-soft">
-                + Registrar cita
+                <i class="fas fa-calendar-plus me-1"></i> Registrar cita
             </a>
         </div>
     </div>
 
+    @* Mensaje de éxito (por ejemplo al crear o cancelar) *@
     @if (TempData["msg"] != null)
     {
-        <div class="alert alert-info py-2 px-3 mb-3">
+        <div class="alert alert-success py-2 px-3 mb-4 rounded-3">
             @TempData["msg"]
         </div>
     }
 
-    <div class="panel-card">
-        @if (Model == null || !Model.Any())
-        {
-            <div class="text-muted">
-                No hay citas registradas para los criterios seleccionados.
-            </div>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Paciente</th>
-                            <th>Especialista</th>
-                            <th>Estado</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var c in Model)
-                        {
-                            <tr>
-                                <td>@c.Fecha.ToString("dd/MM/yyyy")</td>
-                                <td>@c.Hora.ToString(@"hh\:mm")</td>
-                                <td>@c.PacienteNombreCompleto (@c.DNI_Paciente)</td>
-                                <td>@c.EspecialistaNombre</td>
-                                <td>
-                                    @switch (c.Estado)
-                                    {
-                                        case "Programada":
-                                            @:<span class="badge bg-primary badge-estado">Programada</span>
-                                            break;
-                                        case "Cancelada":
-                                            @:<span class="badge bg-secondary badge-estado">Cancelada</span>
-                                            break;
-                                        case "Atendida":
-                                            @:<span class="badge bg-success badge-estado">Atendida</span>
-                                            break;
-                                        default:
-                                            @:<span class="badge bg-light text-dark badge-estado">@c.Estado</span>
-                                            break;
-                                    }
-                                </td>
-                                <td class="text-end">
-                                    <div class="cita-actions">
-                                        @* Aquí podrías poner Detalle/Editar más adelante *@
+    @* --- TARJETA PRINCIPAL: Buscar Paciente --- *@
+    <div class="panel-card mb-4 p-0">
+        <div class="card-header-search py-3 px-4">
+            Buscar Paciente
+        </div>
+        <div class="p-4">
+            <form asp-action="Index" method="get">
+                <div class="input-group">
+                    <input type="text"
+                           name="dni"
+                           class="form-control form-control-lg"
+                           placeholder="Ingrese DNI o Identificación del paciente"
+                           value="@Model.DniBusqueda" />
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="fas fa-search me-1"></i> Consultar
+                    </button>
+                </div>
+            </form>
 
-                                        @if (c.Estado == "Programada")
-                                        {
-                                            <form asp-action="Cancelar"
-                                                  asp-route-id="@c.ID_Cita"
-                                                  method="post"
-                                                  onsubmit="return confirm('¿Cancelar esta cita?');">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-outline-danger">
-                                                    Cancelar
-                                                </button>
-                                            </form>
-                                        }
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
+            @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+            {
+                <div class="alert alert-danger mt-3 mb-0 rounded-3">
+                    <i class="fas fa-exclamation-triangle me-1"></i> @Model.MensajeError
+                </div>
+            }
+        </div>
     </div>
+
+    @* --- RESULTADO DE PACIENTE Y SUS CITAS --- *@
+    @if (Model.Paciente != null)
+    {
+        <h2 class="h4 mt-4 mb-3 text-secondary">Información del Paciente y Agenda</h2>
+
+        @* Datos personales *@
+        <div class="panel-card mb-4 p-0">
+            <div class="card-header py-3 bg-primary text-white" style="border-radius: 12px 12px 0 0;">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-user-circle me-2"></i> Datos del paciente: @Model.Paciente.NombreCompleto
+                </h6>
+            </div>
+            <div class="row p-4">
+                <div class="col-md-4 detail-section">
+                    <div class="detail-item">
+                        <strong>DNI/Documento de Identidad:</strong>
+                        <p class="detail-value">@Model.Paciente.DNI</p>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Nombres y Apellidos:</strong>
+                        <p class="detail-value">@Model.Paciente.NombreCompleto</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 detail-section">
+                    <div class="detail-item">
+                        <strong>Fecha de Nacimiento:</strong>
+                        <p class="detail-value">@(Model.Paciente.FechaNacimiento?.ToString("dd/MM/yyyy") ?? "No registrado")</p>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Teléfono de Contacto:</strong>
+                        <p class="detail-value">@(Model.Paciente.Telefono ?? "No registrado")</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 detail-section">
+                    <div class="detail-item">
+                        <strong>Correo Electrónico:</strong>
+                        <p class="detail-value">@(Model.Paciente.CorreoElectronico ?? "No registrado")</p>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Dirección:</strong>
+                        <p class="detail-value">@(Model.Paciente.Direccion ?? "No registrado")</p>
+                    </div>
+                </div>
+                <div class="col-md-4 detail-section">
+                    <div class="detail-item">
+                        <strong>Genero:</strong>
+                        <p class="detail-value">@(Model.Paciente.Genero ?? "No registrado")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Citas del paciente *@
+        <div class="panel-card mb-5 p-0">
+            <div class="card-header py-3 bg-secondary text-white" style="border-radius: 12px 12px 0 0;">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-calendar-alt me-2"></i> Citas Registradas
+                </h6>
+            </div>
+            <div class="p-4">
+                @if (Model.Citas != null && Model.Citas.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th># Cita</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Especialista</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cita in Model.Citas)
+                                {
+                                    <tr>
+                                        <td><span class="fw-bold text-primary">#@cita.ID_Cita</span></td>
+                                        <td>@cita.Fecha.ToString("dd/MM/yyyy")</td>
+                                        <td>@cita.Hora.ToString(@"hh\:mm")</td>
+                                        <td>@cita.EspecialistaNombre</td>
+                                        <td>
+                                            @switch (cita.Estado)
+                                            {
+                                                case "Programada":
+                                                    @:<span class="badge badge-estado badge-programada">Programada</span>
+                                                    break;
+                                                case "Cancelada":
+                                                    @:<span class="badge badge-estado badge-cancelada">Cancelada</span>
+                                                    break;
+                                                case "Atendida":
+                                                    @:<span class="badge badge-estado badge-atendida">Atendida</span>
+                                                    break;
+                                                default:
+                                                    @:<span class="badge bg-light text-dark badge-estado">@cita.Estado</span>
+                                                    break;
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning mb-0 rounded-3">
+                        <i class="fas fa-info-circle me-1"></i> El paciente <strong>@Model.Paciente.NombreCompleto</strong> no tiene ninguna cita registrada en la agenda.
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @* --- PANEL SECUNDARIO: Agenda General con filtro por fecha (menos invasivo) --- *@
+
+    <div class="mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0 text-secondary">
+                <i class="fas fa-calendar-alt me-1"></i> Agenda general de citas
+            </h2>
+
+            <button class="btn btn-sm btn-outline-secondary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#agendaGeneral"
+                    aria-expanded="@(Model.Paciente == null ? "true" : "false")"
+                    aria-controls="agendaGeneral">
+                <span class="d-none d-sm-inline">Mostrar / ocultar</span>
+                <i class="fas fa-chevron-down ms-1"></i>
+            </button>
+        </div>
+
+        <small class="text-muted d-block mb-2">
+            Panel auxiliar para ver las citas del día o aplicar filtros. El foco principal sigue siendo la consulta por paciente.
+        </small>
+
+        <div class="collapse" id="agendaGeneral">
+            <div class="card shadow mb-3">
+                <div class="card-body bg-light-gray">
+                    <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center flex-wrap">
+                        <label for="fecha" class="form-label mb-0 fw-bold text-muted">Filtrar por Fecha:</label>
+                        <input type="date"
+                               id="fecha"
+                               name="fecha"
+                               value="@Model.FechaFiltro"
+                               class="form-control form-control-sm form-control-custom"
+                               style="max-width: 200px;" />
+
+                        @* Mantener el dni cuando filtro por fecha *@
+                        @if (!string.IsNullOrWhiteSpace(Model.DniBusqueda))
+                        {
+                            <input type="hidden" name="dni" value="@Model.DniBusqueda" />
+                        }
+
+                        <button type="submit" class="btn btn-sm btn-outline-secondary form-control-custom">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+
+                        @* Quitar solo el filtro de fecha, dejando el dni (si hay) *@
+                        <a asp-action="Index"
+                           asp-route-dni="@Model.DniBusqueda"
+                           class="btn btn-sm btn-outline-secondary form-control-custom">
+                            <i class="fas fa-undo"></i> Borrar Filtro
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                @if (Model.Agenda == null || !Model.Agenda.Any())
+                {
+                    <div class="text-muted text-center py-4">
+                        <i class="fas fa-exclamation-circle me-1"></i> No hay citas registradas para los criterios seleccionados.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Especialista</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var c in Model.Agenda)
+                                {
+                                    <tr>
+                                        <td>@c.Fecha.ToString("dd/MM/yyyy")</td>
+                                        <td>@c.Hora.ToString(@"hh\:mm")</td>
+                                        <td><span class="fw-bold">@c.PacienteNombreCompleto</span> (@c.DNI_Paciente)</td>
+                                        <td>@c.EspecialistaNombre</td>
+                                        <td>
+                                            @switch (c.Estado)
+                                            {
+                                                case "Programada":
+                                                    @:<span class="badge badge-estado badge-programada">Programada</span>
+                                                    break;
+                                                case "Cancelada":
+                                                    @:<span class="badge badge-estado badge-cancelada">Cancelada</span>
+                                                    break;
+                                                case "Atendida":
+                                                    @:<span class="badge badge-estado badge-atendida">Atendida</span>
+                                                    break;
+                                                default:
+                                                    @:<span class="badge bg-light text-dark badge-estado">@c.Estado</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="cita-actions">
+                                                @if (c.Estado == "Programada")
+                                                {
+                                                    <form asp-action="Cancelar"
+                                                          asp-route-id="@c.ID_Cita"
+                                                          method="post"
+                                                          onsubmit="return confirm('¿Está seguro de CANCELAR la cita de @c.PacienteNombreCompleto? Esta acción no se puede deshacer.');">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger"
+                                                                title="Cancelar Cita">
+                                                            <i class="fas fa-times"></i> Cancelar
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
 </div>

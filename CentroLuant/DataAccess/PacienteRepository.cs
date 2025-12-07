@@ -55,7 +55,7 @@ namespace CentroLuant.DataAccess
                     {
                         paciente = new Paciente
                         {
-                            DNI = reader["DNI"].ToString()!,
+                            DNI = reader["DNI"].ToString()!.Trim(), // <--- CORRECCIÓN APLICADA
                             Nombres = reader["Nombres"].ToString()!,
                             Apellidos = reader["Apellidos"].ToString()!,
                             FechaNacimiento = reader["FechaNacimiento"] as DateTime?,
@@ -86,7 +86,7 @@ namespace CentroLuant.DataAccess
                     {
                         pacientes.Add(new Paciente
                         {
-                            DNI = reader["DNI"].ToString()!,
+                            DNI = reader["DNI"].ToString()!.Trim(), // <--- CORRECCIÓN APLICADA
                             Nombres = reader["Nombres"].ToString()!,
                             Apellidos = reader["Apellidos"].ToString()!,
                             FechaNacimiento = reader["FechaNacimiento"] as DateTime?,
@@ -175,8 +175,7 @@ namespace CentroLuant.DataAccess
         public Paciente? ConsultarPacientePorHistorial(int idHistorial)
         {
             const string sql = @"
-                SELECT P.* 
-                FROM Paciente P
+                SELECT P.* FROM Paciente P
                 INNER JOIN Historial_Medico H ON P.DNI = H.DNI_Paciente
                 WHERE H.ID_Historial = @ID_Historial";
 
@@ -194,7 +193,7 @@ namespace CentroLuant.DataAccess
                     {
                         paciente = new Paciente
                         {
-                            DNI = reader["DNI"].ToString()!,
+                            DNI = reader["DNI"].ToString()!.Trim(), // <--- CORRECCIÓN APLICADA
                             Nombres = reader["Nombres"].ToString()!,
                             Apellidos = reader["Apellidos"].ToString()!,
                             FechaNacimiento = reader["FechaNacimiento"] as DateTime?,
@@ -213,8 +212,7 @@ namespace CentroLuant.DataAccess
             var pacientes = new List<Paciente>();
 
             const string sql = @"
-        SELECT * 
-        FROM Paciente
+        SELECT * FROM Paciente
         WHERE DNI LIKE @Filtro
            OR Nombres LIKE @Filtro
            OR Apellidos LIKE @Filtro
@@ -232,7 +230,7 @@ namespace CentroLuant.DataAccess
                     {
                         pacientes.Add(new Paciente
                         {
-                            DNI = reader["DNI"].ToString()!,
+                            DNI = reader["DNI"].ToString()!.Trim(), // <--- CORRECCIÓN APLICADA
                             Nombres = reader["Nombres"].ToString()!,
                             Apellidos = reader["Apellidos"].ToString()!,
                             FechaNacimiento = reader["FechaNacimiento"] as DateTime?,

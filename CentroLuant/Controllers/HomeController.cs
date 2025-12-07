@@ -17,7 +17,7 @@ namespace CentroLuant.Controllers
 
         public IActionResult Index()
         {
-
+            
             return View();
         }
 

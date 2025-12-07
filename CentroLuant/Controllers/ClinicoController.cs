@@ -5,6 +5,7 @@ using CentroLuant.Models;
 
 namespace CentroLuant.Controllers
 {
+    // CUS 06 / CUS 07: Solo Administrador y Especialista tienen acceso a estas funciones clínicas
     [Authorize(Roles = "Administrador,Especialista")]
     public class ClinicoController : Controller
     {
@@ -21,7 +22,7 @@ namespace CentroLuant.Controllers
         }
 
         // ================================================================
-        //                     VISUALIZAR HISTORIAL
+        //                     VISUALIZAR HISTORIAL (CUS 06)
         // ================================================================
 
         [HttpGet]
@@ -31,7 +32,7 @@ namespace CentroLuant.Controllers
 
             if (!string.IsNullOrWhiteSpace(dni))
             {
-                var paciente = _pacRepo.ConsultarPacientePorDNI(dni);
+                var paciente = _pacRepo.ConsultarPacientePorDNI(dni); //
 
                 if (paciente == null)
                 {
@@ -39,10 +40,19 @@ namespace CentroLuant.Controllers
                     return View(vm);
                 }
 
-                var historial = _histRepo.ObtenerPorDni(dni)
-                                ?? _histRepo.CrearHistorial(dni);
+                // CUS 06: Solo intentamos OBTENER el historial. 
+                // La creación (CUS 03) es responsabilidad de la Recepcionista.
+                var historial = _histRepo.ObtenerPorDni(dni);
 
-                var tratamientos = _histRepo.ObtenerTratamientos(historial.ID_Historial);
+                if (historial == null)
+                {
+                    // Mensaje de error explícito para guiar al usuario
+                    ViewBag.Error = $"El paciente {paciente.NombreCompleto} no tiene un historial clínico registrado. (Debe ser creado por Recepción usando el botón 'Registrar Historial').";
+                    vm.Paciente = paciente;
+                    return View(vm);
+                }
+
+                var tratamientos = _histRepo.ObtenerTratamientos(historial.ID_Historial); //
 
                 vm.Paciente = paciente;
                 vm.Historial = historial;
@@ -66,13 +76,13 @@ namespace CentroLuant.Controllers
         }
 
         // ================================================================
-        //                     EDITAR HISTORIAL
+        //                     EDITAR HISTORIAL (CUS 07 - Encabezado)
         // ================================================================
 
         [Authorize(Roles = "Administrador,Especialista")]
         public IActionResult EditarHistorial(int idHistorial)
         {
-            var historial = _histRepo.ObtenerPorId(idHistorial);
+            var historial = _histRepo.ObtenerPorId(idHistorial); //
             if (historial == null) return NotFound();
 
             var paciente = _pacRepo.ConsultarPacientePorHistorial(idHistorial);
@@ -86,7 +96,7 @@ namespace CentroLuant.Controllers
         [Authorize(Roles = "Administrador,Especialista")]
         public IActionResult EditarHistorial(HistorialMedico model)
         {
-            if (!_histRepo.ActualizarHistorial(model.ID_Historial, model.ObservacionesIniciales))
+            if (!_histRepo.ActualizarHistorial(model.ID_Historial, model.ObservacionesIniciales)) //
             {
                 ViewBag.Error = "No se pudo guardar los cambios del historial.";
                 return View(model);
@@ -97,13 +107,13 @@ namespace CentroLuant.Controllers
         }
 
         // ================================================================
-        //                     EDITAR TRATAMIENTO
+        //                     EDITAR TRATAMIENTO (CUS 07 - Detalle)
         // ================================================================
 
         [Authorize(Roles = "Administrador,Especialista")]
         public IActionResult EditarTratamiento(int id)
         {
-            var tratamiento = _histRepo.ObtenerTratamientoPorId(id);
+            var tratamiento = _histRepo.ObtenerTratamientoPorId(id); //
             if (tratamiento == null) return NotFound();
 
             return View(tratamiento);
@@ -117,7 +127,7 @@ namespace CentroLuant.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            if (!_histRepo.ActualizarTratamiento(model))
+            if (!_histRepo.ActualizarTratamiento(model)) //
             {
                 ViewBag.Error = "No se pudo actualizar el tratamiento.";
                 return View(model);
@@ -129,7 +139,7 @@ namespace CentroLuant.Controllers
         }
 
         // ================================================================
-        //                     REGISTRAR TRATAMIENTO
+        //                     REGISTRAR TRATAMIENTO (CUS 07 - Adición)
         // ================================================================
 
         [HttpPost]

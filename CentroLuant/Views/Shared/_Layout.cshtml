@@ -147,23 +147,27 @@
                                         </a>
                                     </li>
                                 }
-                                <li class="nav-item">
-                                    <a class="nav-link app-link styles-nav" asp-controller="Paciente" asp-action="Index">
-                                        <i class="bi bi-people"></i> Pacientes
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link app-link styles-nav" asp-controller="Cita" asp-action="Index">
-                                        <i class="bi bi-calendar-check"></i> Citas
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link app-link styles-nav" asp-controller="Clinico" asp-action="Historial">
-                                        <i class="bi bi-journal-medical"></i> Historial clínico
-                                    </a>
-                                </li>
+                                @if (User.IsInRole("Recepcionista") || User.IsInRole("Administrador"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link app-link styles-nav" asp-controller="Paciente" asp-action="Index">
+                                            <i class="bi bi-people"></i> Pacientes
+                                        </a>
+                                    </li>
+                              
+                                    <li class="nav-item">
+                                        <a class="nav-link app-link styles-nav" asp-controller="Cita" asp-action="Index">
+                                            <i class="bi bi-calendar-check"></i> Citas
+                                        </a>
+                                    </li>
+                                }
+                                @if(User.IsInRole("Administrador") || User.IsInRole("Especialista")){
+                                    <li class="nav-item">
+                                        <a class="nav-link app-link styles-nav" asp-controller="Clinico" asp-action="Historial">
+                                            <i class="bi bi-journal-medical"></i> Gestión clínica
+                                        </a>
+                                    </li>
+                                }
                                 @if (User.IsInRole("Recepcionista") || User.IsInRole("Administrador"))
                                 {
                                     <li class="nav-item">

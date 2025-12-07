@@ -1,5 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
+    var rolUsuario = User.IsInRole("Administrador") ? "Administrador" :
+                         User.IsInRole("Recepcionista") ? "Recepcionista" :
+                         User.IsInRole("Especialista") ? "Especialista" :
+                         "";
 }
 
 <style>
@@ -98,7 +102,7 @@
 <div class="home-wrapper">
     <!-- ENCABEZADO -->
     <div class="mb-3">
-        <h1 class="home-header-title">Panel principal</h1>
+        <h1 class="home-header-title">Módulo @rolUsuario</h1>
         <p class="home-header-subtitle">Centro Odontológico Luant</p>
         <p class="home-header-helper">
             Desde aquí puede acceder a los módulos principales del sistema.
@@ -120,42 +124,59 @@
                     <div class="module-text">
                         Consulta historiales médicos y registra diagnósticos y tratamientos realizados.
                     </div>
-                    <div class="module-meta">Rol: Especialista / Administrador</div>
                 </div>
             </div>
         </div>
-
-        <!-- Gestión de pacientes -->
-        <div class="col-lg-4 col-md-6">
-            <div class="module-card" onclick="location.href='@Url.Action("Index", "Paciente")'">
-                <div class="module-icon">
-                    <i class="bi bi-people"><img src="~/img/gestion-paciente.jpg" class="module-icon"></i>
-                </div>
-                <div>
-                    <div class="module-title">Gestión de pacientes</div>
-                    <div class="module-text">
-                        Registro, actualización y consulta de datos personales y clínicos del paciente.
+        @if (User.IsInRole("Recepcionista") || User.IsInRole("Administrador"))
+        {
+            <!-- Gestión de pacientes -->
+            <div class="col-lg-4 col-md-6">
+                <div class="module-card" onclick="location.href='@Url.Action("Index", "Paciente")'">
+                    <div class="module-icon">
+                        <i class="bi bi-people"><img src="~/img/gestion-paciente.jpg" class="module-icon"></i>
                     </div>
-                    <div class="module-meta">Rol: Recepción / Administrador</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gestión de citas -->
-        <div class="col-lg-4 col-md-6">
-            <div class="module-card" onclick="location.href='@Url.Action("Index", "Cita")'">
-                <div class="module-icon">
-                    <i class="bi bi-calendar2-check"><img src="~/img/gestion-citas.jpg" class="module-icon"></i>
-                </div>
-                <div>
-                    <div class="module-title">Gestión de citas</div>
-                    <div class="module-text">
-                        Agenda clínica: programación, control y seguimiento de citas por paciente y especialista.
+                    <div>
+                        <div class="module-title">Gestión de pacientes</div>
+                        <div class="module-text">
+                            Registro, actualización y consulta de datos personales y clínicos del paciente.
+                        </div>
                     </div>
-                    <div class="module-meta">Rol: Recepción / Administrador</div>
                 </div>
             </div>
-        </div>
-
+        }
+        @if (User.IsInRole("Recepcionista") || User.IsInRole("Administrador"))
+        {
+            <!-- Gestión de citas -->
+            <div class="col-lg-4 col-md-6">
+                <div class="module-card" onclick="location.href='@Url.Action("Index", "Cita")'">
+                    <div class="module-icon">
+                        <i class="bi bi-calendar2-check"><img src="~/img/gestion-citas.jpg" class="module-icon"></i>
+                    </div>
+                    <div>
+                        <div class="module-title">Consultar citas</div>
+                        <div class="module-text">
+                            Agenda clínica: programación, control y seguimiento de citas por paciente y especialista.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (User.IsInRole("Recepcionista") || User.IsInRole("Administrador"))
+        {
+            <!-- Gestión de facturas-->
+            <div class="col-lg-4 col-md-6">
+                <div class="module-card" onclick="location.href='@Url.Action("Index", "Cita")'">
+                    <div class="module-icon">
+                        <i class="bi bi-calendar2-check"><img src="~/img/gestion-citas.jpg" class="module-icon"></i>
+                    </div>
+                    <div>
+                        <div class="module-title">Gestión de facturas</div>
+                        <div class="module-text">
+                            Modificar descripción.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>

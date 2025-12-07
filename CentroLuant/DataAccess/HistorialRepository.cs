@@ -31,7 +31,7 @@ namespace CentroLuant.DataAccess
                 return new HistorialMedico
                 {
                     ID_Historial = (int)dr["ID_Historial"],
-                    DNI_Paciente = dr["DNI_Paciente"].ToString()!,
+                    DNI_Paciente = dr["DNI_Paciente"].ToString()!.Trim(), // <-- CORRECCIÓN APLICADA
                     FechaCreacion = (DateTime)dr["FechaCreacion"],
                     ObservacionesIniciales = dr["ObservacionesIniciales"] as string
                 };
@@ -121,6 +121,7 @@ namespace CentroLuant.DataAccess
             cn.Open();
             int id = (int)cmd.ExecuteScalar();
 
+            // La propiedad DNI_Paciente aquí usa el parámetro 'dni' que es limpio, no requiere Trim()
             return new HistorialMedico
             {
                 ID_Historial = id,
@@ -206,13 +207,13 @@ namespace CentroLuant.DataAccess
             return new HistorialMedico
             {
                 ID_Historial = (int)dr["ID_Historial"],
-                DNI_Paciente = dr["DNI_Paciente"].ToString()!,
+                DNI_Paciente = dr["DNI_Paciente"].ToString()!.Trim(), // <-- CORRECCIÓN APLICADA
                 FechaCreacion = (DateTime)dr["FechaCreacion"],
                 ObservacionesIniciales = dr["ObservacionesIniciales"] as string
             };
         }
 
 
-        
+
     }
 }
