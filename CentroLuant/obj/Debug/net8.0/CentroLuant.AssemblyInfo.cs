@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CentroLuant")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+385c1a29c3e03e1614cee405b3114e1b017cea99")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41499329a249c0897156aeaa12072668e3d9567b")]
 [assembly: System.Reflection.AssemblyProductAttribute("CentroLuant")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CentroLuant")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

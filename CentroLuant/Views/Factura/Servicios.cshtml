@@ -197,6 +197,7 @@
             const totalInput = document.getElementById('fact-total');
             const descArea = document.getElementById('fact-descripcion');
             const chkAll = document.getElementById('chk-all');
+            const form = document.querySelector('form[asp-action="GenerarFactura"]') || document.querySelector('form');
 
             if (!checks.length) return;
 
@@ -208,6 +209,7 @@
                     if (ch.checked) {
                         const monto = parseFloat(ch.dataset.amount || "0");
                         total += monto;
+
                         if (ch.dataset.desc) {
                             lineas.push(ch.dataset.desc);
                         }
@@ -218,7 +220,13 @@
                 descArea.value = lineas.join('\r\n');
             }
 
-            checks.forEach(ch => ch.addEventListener('change', recalcular));
+            checks.forEach(ch => ch.addEventListener('change', function () {
+                const allChecked = Array.from(checks).every(c => c.checked);
+                if (chkAll) {
+                    chkAll.checked = allChecked;
+                }
+                recalcular();
+            }));
 
             if (chkAll) {
                 chkAll.addEventListener('change', function () {
@@ -227,9 +235,17 @@
                 });
             }
 
-            // Inicial: marcar todos y calcular
-            checks.forEach(ch => ch.checked = true);
-            recalcular();
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const algunoMarcado = Array.from(checks).some(c => c.checked);
+                    if (!algunoMarcado) {
+                        e.preventDefault();
+                        alert("Seleccione al menos un tratamiento para generar la factura.");
+                        return;
+                    }
+                    recalcular();
+                });
+            }
         })();
     </script>
 }
